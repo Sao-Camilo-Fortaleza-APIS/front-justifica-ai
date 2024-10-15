@@ -1,6 +1,6 @@
 import { Employee, getEmployeeByCPF } from "@/api/get-employee-by-cpf"
 import { getSectors, Sectors } from "@/api/gete-sectors"
-import { sendJustification } from "@/api/send-justification"
+import { Justification, sendJustification } from "@/api/send-justification"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -19,13 +19,15 @@ export default function TimeJustificationForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [isValidCPF, setIsValidCPF] = useState(false)
     const [employee, setEmployee] = useState<Employee | null>(null)
-    const [formData, setFormData] = useState({
-        sector: "",
-        date: "",
-        time: "",
-        reason: "",
+    const [formData, setFormData] = useState<Justification>({
         complement: "",
-        isAware: false
+        id_tasy: "",
+        id_sector: "",
+        phone: 0,
+        date_occurency: null,
+        reason: "",
+        is_aware: false,
+        mat: null,
     })
     const { toast } = useToast()
 
@@ -80,6 +82,7 @@ export default function TimeJustificationForm() {
         }
     ]
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data: sectorsData, isFetching: isFetchingSectors } = useQuery({
         queryKey: ['sectors'],
         queryFn: getSectors
@@ -118,7 +121,7 @@ export default function TimeJustificationForm() {
                 description: "A sua justificativa de ponto foi enviada para a gestão.",
             })
             // Reset form
-            setFormData({ date: "", time: "", reason: "", complement: "", isAware: false, sector: "" })
+            setFormData({ complement: "", id_tasy: "", id_sector: "", phone: 0, date_occurency: null, reason: "", is_aware: false, mat: null, })
             setIsValidCPF(false)
             setCpf("")
         }).catch(() => {
@@ -168,7 +171,7 @@ export default function TimeJustificationForm() {
                         <Label htmlFor="sector">Setor
                             {isFetchingSectors && <Loader className="text-sm text-gray-500" />}
                         </Label>
-                        <Select value={formData.sector} onValueChange={handleSectorSelectedChange} required>
+                        <Select value={formData.id_sector} onValueChange={handleSectorSelectedChange} required>
                             <SelectTrigger className="text-muted-foreground" id="subevent">
                                 <SelectValue placeholder="Selecione o setor" />
                             </SelectTrigger>
@@ -187,7 +190,7 @@ export default function TimeJustificationForm() {
                             id="date"
                             name="date"
                             type="date"
-                            value={formData.date}
+                            value={formData.date_occurency ? formData.date_occurency.toISOString().split('T')[0] : ''}
                             onChange={handleInputChange}
                             required
                         />

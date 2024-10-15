@@ -1,21 +1,16 @@
 import api from "@/lib/axios"
 
-interface Justification {
-    sector: string
-    date: string
-    time: string
-    reason: string
+export interface Justification {
     complement: string
-    isAware: boolean
+    id_tasy: string
+    id_sector: string
+    phone: number | null
+    date_occurency: Date | null
+    reason: string
+    is_aware: boolean
+    mat: number | null
 }
 export async function sendJustification(data: Justification) {
-    const response = await api.post("/open_order", {
-        "observation_p": data.complement,
-        "reason": data.reason,
-        "sector": data.sector,
-        "date": data.date,
-        "time": data.time,
-        "isAware": data.isAware
-    })
+    const response = await api.post("/open_justification", data)
     return response.data
 }
