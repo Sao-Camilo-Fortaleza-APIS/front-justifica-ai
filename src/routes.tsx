@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom"
 import { App } from "./app"
 import { Approve } from "./routes/approve"
-import TimeJustificationForm from "./routes/create"
+import TimeJustificationForm from "./routes/create-justification"
 
 export const router = createBrowserRouter([
     {

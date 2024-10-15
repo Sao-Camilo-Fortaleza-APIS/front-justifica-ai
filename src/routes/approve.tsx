@@ -75,7 +75,6 @@ export function Approve() {
     ]
 
     return (
-
         <>
             <div className="px-1 py-3 sm:p-6 max-w-4xl mx-auto space-y-4">
                 <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Suas Justificativas</h2>
@@ -130,7 +129,7 @@ export function Approve() {
                 </div>
             </div>
 
-            <footer className="mb-0">
+            {/*   <footer className="mb-0">
                 <div className="bg-zinc-900 text-white text-center py-4 mt-3">
                     <nav className="w-full">
                         <span>Links Úteis:</span>
@@ -142,7 +141,7 @@ export function Approve() {
                     </nav>
                     <p className="text-sm mt-4">TI HSC © 2024 - Todos os direitos reservados</p>
                 </div>
-            </footer>
+            </footer> */}
         </>
     )
 }

@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 
 export function Header() {
   return (
-    <header className="flex justify-between items-center p-1 shadow ">
+    <header className="flex justify-between items-center p-1 shadow bg-white">
       <img className="size-12" src="/logo_sc_vazada.png" alt="Logo São Camilo" />
 
       <Button size="icon" variant="link">
