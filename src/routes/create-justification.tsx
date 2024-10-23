@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { useQuery } from "@tanstack/react-query"
@@ -82,7 +81,6 @@ export default function TimeJustificationForm() {
         }
     ] */
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data: sectorsData } = useQuery({
         queryKey: ['sectors'],
         queryFn: getSectors
@@ -178,10 +176,13 @@ export default function TimeJustificationForm() {
                     <div className="space-y-2">
                         <Label htmlFor="sector">Setor</Label>
                         <select
+                            value={formData.id_sector}
+                            onChange={(e) => handleSectorSelectedChange(e.target.value)}
                             className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input 
                             bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background 
                             focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                            name="" id="">
+                            name="sector" id="sector"
+                        >
                             <option value="" className="">Selecione o setor</option>
                             {sectorsData?.map(sector => {
                                 return (
@@ -189,18 +190,6 @@ export default function TimeJustificationForm() {
                                 )
                             })}
                         </select>
-                        <Select value={formData.id_sector} onValueChange={handleSectorSelectedChange} required>
-                            <SelectTrigger className="text-muted-foreground" id="subevent">
-                                <SelectValue placeholder="Selecione o setor" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {sectorsData?.map(sector => {
-                                    return (
-                                        <SelectItem key={sector.nr_sequencia} value={`${sector.nr_sequencia}`}>{sector.ds_localizacao}</SelectItem>
-                                    )
-                                })}
-                            </SelectContent>
-                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="date">Data da ocorrência</Label>
