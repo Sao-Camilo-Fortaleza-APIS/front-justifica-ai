@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom"
 import { App } from "./app"
 import { Approve } from "./routes/approve"
 import TimeJustificationForm from "./routes/create-justification"
+import { SignIn } from "./routes/sign-in"
 
 export const router = createBrowserRouter([
     {
@@ -10,6 +11,9 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
+                element: <SignIn />
+            }, {
+                path: "/create-justification",
                 element: <TimeJustificationForm />
             },
             {
