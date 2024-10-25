@@ -11,13 +11,13 @@ import { useToast } from "@/hooks/use-toast"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Mail, MonitorSmartphone, User2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function TimeJustificationForm() {
     const queryClient = useQueryClient()
     const navigate = useNavigate()
+    const location = useLocation()
     const [isLoading, setIsLoading] = useState(false)
-    const [employee, setEmployee] = useState<Employee | null>(null)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
         id_tasy: "",
@@ -134,6 +134,12 @@ export default function TimeJustificationForm() {
     return (
         <div className="px-1 py-3 sm:p-6 max-w-4xl mx-auto space-y-4 p-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold mb-6">Justificativa de Ponto</h1>
+            {location.state?.employee && (
+                <div className="flex items-center space-x-2">
+                    <User2 className="h-6 w-6" />
+                    <span className="font-semibold">{employeeData?.name}</span>
+                </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4 w-full mt-4">
                 <div className="flex flex-col">
                     <div className="flex items-center">

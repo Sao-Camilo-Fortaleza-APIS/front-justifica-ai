@@ -3,12 +3,11 @@ import { BaseSyntheticEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Employee, getEmployeeByCPF } from '@/api/get-employee-by-cpf';
+import { getEmployeeByCPF } from '@/api/get-employee-by-cpf';
 import illustration from '@/assets/illustration.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useQuery } from '@tanstack/react-query';
 import { Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -36,11 +35,9 @@ export function SignIn() {
         register: registerColaborador,
         handleSubmit: handleSubmitColaborador,
         formState: { errors: errorsColaborador, isSubmitting: isSubmittingColaborador },
-        getValues: getValuesColaborador,
     } = useForm<ColaboradorFormData>({
         resolver: zodResolver(colaboradorSchema),
     });
-    const cpf = getValuesColaborador('cpf')
 
     // useForm para Gestor
     const {
@@ -51,11 +48,6 @@ export function SignIn() {
         resolver: zodResolver(gestorSchema),
     });
 
-    const { isError: isErrorColaborator, isSuccess: isSuccessColaborator } = useQuery<Employee>({
-        queryKey: ['employee'],
-        queryFn: () => getEmployeeByCPF(`${cpf}`),
-    })
-
     const onSubmitColaborador = async (data: ColaboradorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
         console.log('Autenticando como colaborador...', data);
@@ -64,6 +56,7 @@ export function SignIn() {
         await getEmployeeByCPF(data.cpf).then((response) => {
             console.log(response)
             toast.success(`${response.name} encontrado!`)
+            navigate('create-justification', { state: { employee: response } })
         }).catch((error) => {
             console.error(error)
             toast.error('CPF não encontrado')
@@ -76,12 +69,8 @@ export function SignIn() {
         // Redirecionamento ou ação após login de gestor
     };
 
-    isSuccessColaborator && navigate('/create-justification')
-
     return (
         <div className="flex h-screen">
-            {isErrorColaborator && toast.error('CPF não encontrado')}
-
             {/* Lado Esquerdo - Imagem */}
             <div className="flex justify-center w-2/5 bg-blue-500">
                 <img
