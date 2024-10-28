@@ -5,7 +5,7 @@ export interface Justification {
     id_tasy: string
     id_sector: string
     phone: number | null
-    date_occurency: string
+    date_occurrence: string
     reason: string
     is_aware: boolean
     mat: number | null

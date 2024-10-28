@@ -8,80 +8,27 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { Mail, MonitorSmartphone, User2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
 export default function TimeJustificationForm() {
-    const queryClient = useQueryClient()
     const navigate = useNavigate()
-    const location = useLocation()
+    const { state } = useLocation()
     const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
         id_tasy: "",
         id_sector: "",
         phone: 0,
-        date_occurency: "",
+        date_occurrence: "",
         reason: "",
         is_aware: false,
         mat: null,
     })
-    const employeeData = queryClient.getQueryData<Employee>(['employee'])
-    console.log(employeeData)
+    const employeeData = state?.employee as Employee
     const { toast } = useToast()
-
-    /* const fakeSectorData: Sectors = [
-        {
-            "ds_localizacao": "ADMINISTRAÇÃO DO SERVIÇO DE IMAGEM",
-            "nr_sequencia": 41
-        },
-        {
-            "ds_localizacao": "AGÊNCIA TRANSFUSIONAL",
-            "nr_sequencia": 42
-        },
-        {
-            "ds_localizacao": "ALMOXARIFADO",
-            "nr_sequencia": 43
-        },
-        {
-            "ds_localizacao": "ALOJAMENTO CONJUNTO",
-            "nr_sequencia": 44
-        },
-        {
-            "ds_localizacao": "ALOJAMENTO CONJUNTO 3º LESTE",
-            "nr_sequencia": 45
-        },
-        {
-            "ds_localizacao": "ANÁLISE DE CONTAS MÉDICAS",
-            "nr_sequencia": 46
-        },
-        {
-            "ds_localizacao": "ASSESSORIA JURÍDICA",
-            "nr_sequencia": 49
-        },
-        {
-            "ds_localizacao": "AUDITORIA INTERNA",
-            "nr_sequencia": 50
-        },
-        {
-            "ds_localizacao": "AUDITÓRIO E SALA DE REUNIÕES",
-            "nr_sequencia": 51
-        },
-        {
-            "ds_localizacao": "AUTORIZAÇÕES",
-            "nr_sequencia": 52
-        },
-        {
-            "ds_localizacao": "CASA DE RESÍDUOS",
-            "nr_sequencia": 53
-        },
-        {
-            "ds_localizacao": "CENTRAL DE ABASTECIMENTO FARMACÊUTICO",
-            "nr_sequencia": 54
-        }
-    ] */
 
     const { data: sectorsData } = useQuery({
         queryKey: ['sectors'],
@@ -90,7 +37,7 @@ export default function TimeJustificationForm() {
 
     const handleDateChange = (selectedDate: Date | undefined) => {
         if (selectedDate) {
-            setFormData(prev => ({ ...prev, date_occurency: selectedDate.toISOString() }))
+            setFormData(prev => ({ ...prev, date_occurrence: selectedDate.toISOString() }))
         }
     }
 
@@ -99,7 +46,7 @@ export default function TimeJustificationForm() {
     }
 
     const handleSectorSelectedChange = (value: string) => {
-        setFormData(prev => ({ ...prev, sector: value }))
+        setFormData(prev => ({ ...prev, id_sector: value }))
     }
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, complement: e.target.value }))
@@ -117,7 +64,7 @@ export default function TimeJustificationForm() {
                     description: "A sua justificativa de ponto foi enviada para a gestão.",
                 })
                 // Reset form
-                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: 0, date_occurency: "", reason: "", is_aware: false, mat: null, })
+                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: 0, date_occurrence: "", reason: "", is_aware: false, mat: null, })
             }).catch(() => {
                 toast({
                     title: "Falha ao enviar justificativa",
@@ -127,23 +74,23 @@ export default function TimeJustificationForm() {
             })
     }
 
+    console.log("formData", formData)
+    console.log("employeeData", employeeData)
+
     useEffect(() => {
         if (!employeeData) return navigate('/')
+
+        setFormData(prev => ({ ...prev, mat: employeeData.mat, id_tasy: employeeData.id_tasy.toString() }))
+        // setFormData(prev => ({ ...prev, id_tasy: employeeData.id_tasy }))
     }, [])
 
     return (
         <div className="px-1 py-3 sm:p-6 max-w-4xl mx-auto space-y-4 p-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold mb-6">Justificativa de Ponto</h1>
-            {location.state?.employee && (
-                <div className="flex items-center space-x-2">
-                    <User2 className="h-6 w-6" />
-                    <span className="font-semibold">{employeeData?.name}</span>
-                </div>
-            )}
             <form onSubmit={handleSubmit} className="space-y-4 w-full mt-4">
                 <div className="flex flex-col">
-                    <div className="flex items-center">
-                        <User2 className="mr-2 h-4 w-4" />
+                    <div className="flex items-end leading-tight space-x-2">
+                        <User2 className="h-6 w-6" />
                         <span className="font-semibold">{employeeData?.name}</span>
                     </div>
                     <div className="flex items-center">

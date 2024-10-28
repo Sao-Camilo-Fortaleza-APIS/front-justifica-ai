@@ -1,43 +1,22 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { BaseSyntheticEvent, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { getEmployeeByCPF } from '@/api/get-employee-by-cpf';
-import illustration from '@/assets/illustration.svg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-
-// Esquema de validação com Zod
-const colaboradorSchema = z.object({
-    cpf: z.string().min(11, 'O CPF deve ter 11 dígitos').max(11, 'O CPF deve ter 11 dígitos'),
-});
+import illustration from '@/assets/illustration.svg'
+import { CollaboratorForm } from '@/components/collaborator-form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader } from 'lucide-react'
+import { BaseSyntheticEvent, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 const gestorSchema = z.object({
     user: z.string(),
     senha: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
-});
-
-// Tipagem dos formulários com base no Zod
-type ColaboradorFormData = z.infer<typeof colaboradorSchema>;
-type GestorFormData = z.infer<typeof gestorSchema>;
+})
+type GestorFormData = z.infer<typeof gestorSchema>
 
 export function SignIn() {
-    const navigate = useNavigate()
-    const [isGestor, setIsGestor] = useState(false);
-
-    // useForm para Colaborador
-    const {
-        register: registerColaborador,
-        handleSubmit: handleSubmitColaborador,
-        formState: { errors: errorsColaborador, isSubmitting: isSubmittingColaborador },
-    } = useForm<ColaboradorFormData>({
-        resolver: zodResolver(colaboradorSchema),
-    });
+    const [isGestor, setIsGestor] = useState(false)
 
     // useForm para Gestor
     const {
@@ -46,28 +25,13 @@ export function SignIn() {
         formState: { errors: errorsGestor, isSubmitting: isSubmittingGestor },
     } = useForm<GestorFormData>({
         resolver: zodResolver(gestorSchema),
-    });
-
-    const onSubmitColaborador = async (data: ColaboradorFormData, e?: BaseSyntheticEvent | undefined) => {
-        e?.preventDefault()
-        console.log('Autenticando como colaborador...', data);
-        // Redirecionamento ou ação após login de colaborador
-
-        await getEmployeeByCPF(data.cpf).then((response) => {
-            console.log(response)
-            toast.success(`${response.name} encontrado!`)
-            navigate('create-justification', { state: { employee: response } })
-        }).catch((error) => {
-            console.error(error)
-            toast.error('CPF não encontrado')
-        })
-    };
+    })
 
     const onSubmitGestor = async (data: GestorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
-        console.log('Autenticando como gestor...', data);
+        console.log('Autenticando como gestor...', data)
         // Redirecionamento ou ação após login de gestor
-    };
+    }
 
     return (
         <div className="flex h-screen">
@@ -85,33 +49,7 @@ export function SignIn() {
                 <h1 className="text-3xl font-bold mb-6">Justifica Aí</h1>
 
                 {!isGestor ? (
-                    <form onSubmit={handleSubmitColaborador(onSubmitColaborador)} className="w-full max-w-sm">
-                        {/* Campo CPF para Colaborador */}
-                        <div className="mb-4">
-                            <Label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cpf">
-                                CPF
-                            </Label>
-                            <Input
-                                type="text"
-                                id="cpf"
-                                placeholder="Digite seu CPF"
-                                className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                {...registerColaborador('cpf')}
-                            />
-                            {errorsColaborador.cpf && (
-                                <p className="text-red-500 text-xs mt-1">{errorsColaborador.cpf.message}</p>
-                            )}
-                        </div>
-
-                        {/* Botão de login */}
-                        <Button
-                            type="submit"
-                            className="bg-blue-500 w-full h-12 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
-                            disabled={isSubmittingColaborador}
-                        >
-                            {isSubmittingColaborador ? <Loader className='animate-spin' /> : 'Entrar'}
-                        </Button>
-                    </form>
+                    <CollaboratorForm />
                 ) : (
                     <form onSubmit={handleSubmitGestor(onSubmitGestor)} className="w-full max-w-sm">
                         {/* Campo Usuário para Gestor */}
@@ -176,5 +114,5 @@ export function SignIn() {
                 </Button>
             </div>
         </div>
-    );
+    )
 }
