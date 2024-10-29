@@ -1,14 +1,17 @@
 import { Employee } from "@/api/get-employee-by-cpf"
 import { getSectors } from "@/api/gete-sectors"
 import { Justification, sendJustification } from "@/api/send-justification"
-import { DatePicker } from "@/components/date-picker"
+import { DateTimePicker } from "@/components/datetime-picker"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { useQuery } from "@tanstack/react-query"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { Mail, MonitorSmartphone, User2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -21,23 +24,32 @@ export default function TimeJustificationForm() {
         complement: "",
         id_tasy: "",
         id_sector: "",
-        phone: 0,
+        phone: "",
         date_occurrence: "",
         reason: "",
         is_aware: false,
         mat: null,
+        hour: "",
     })
     const employeeData = state?.employee as Employee
     const { toast } = useToast()
 
     const { data: sectorsData } = useQuery({
         queryKey: ['sectors'],
-        queryFn: getSectors
+        queryFn: getSectors,
+        refetchOnWindowFocus: false,
     })
 
     const handleDateChange = (selectedDate: Date | undefined) => {
         if (selectedDate) {
-            setFormData(prev => ({ ...prev, date_occurrence: selectedDate.toISOString() }))
+            console.log(selectedDate)
+            setFormData(prev => ({ ...prev, date_occurrence: format(selectedDate, "dd/MM/yyyy", { locale: ptBR }) }))
+        }
+    }
+    const handleTimeChange = (selectedTime: string | undefined) => {
+        if (selectedTime) {
+            const timeFormatted = selectedTime[0] + selectedTime[1] + ":" + selectedTime[2] + selectedTime[3]
+            setFormData(prev => ({ ...prev, hour: timeFormatted }))
         }
     }
 
@@ -56,6 +68,7 @@ export default function TimeJustificationForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        formData.date_occurrence = `${formData.date_occurrence} ${formData.hour}`
         await sendJustification(formData)
             .then(() => {
                 setIsLoading(false)
@@ -64,7 +77,7 @@ export default function TimeJustificationForm() {
                     description: "A sua justificativa de ponto foi enviada para a gestão.",
                 })
                 // Reset form
-                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: 0, date_occurrence: "", reason: "", is_aware: false, mat: null, })
+                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
             }).catch(() => {
                 toast({
                     title: "Falha ao enviar justificativa",
@@ -75,7 +88,7 @@ export default function TimeJustificationForm() {
     }
 
     console.log("formData", formData)
-    console.log("employeeData", employeeData)
+    //  console.log("employeeData", employeeData)
 
     useEffect(() => {
         if (!employeeData) return navigate('/')
@@ -109,7 +122,7 @@ export default function TimeJustificationForm() {
                     <select
                         value={formData.id_sector}
                         onChange={(e) => handleSectorSelectedChange(e.target.value)}
-                        className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input 
+                        className="flex h-9 w-60 items-center justify-between whitespace-nowrap rounded-md border border-input 
                             bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background 
                             focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         name="sector" id="sector"
@@ -122,9 +135,9 @@ export default function TimeJustificationForm() {
                         })}
                     </select>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 flex flex-col">
                     <Label htmlFor="date">Data da ocorrência</Label>
-                    <DatePicker onDateChange={handleDateChange} />
+                    <DateTimePicker onDateChange={handleDateChange} onTimeChange={handleTimeChange} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="time">Motivo</Label>
@@ -148,6 +161,17 @@ export default function TimeJustificationForm() {
 
                 </div>
                 <div className="space-y-2">
+                    <Label htmlFor="phone">Contato/Ramal</Label>
+                    <Input
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        className="w-60"
+                        required
+                    />
+                </div>
+                <div className="space-y-2">
                     <Label htmlFor="complement">Complemento</Label>
                     <Textarea
                         id="complement"
@@ -155,12 +179,13 @@ export default function TimeJustificationForm() {
                         placeholder=""
                         value={formData.complement}
                         onChange={handleTextareaChange}
+                        className="w-2/3"
                         required
                         rows={5}
                     />
                 </div>
                 <div className="flex items-center space-x-2 space-y-2">
-                    <Checkbox id="terms" />
+                    <Checkbox id="terms" checked={formData.is_aware} onCheckedChange={(e) => setFormData(prev => ({ ...prev, is_aware: e as boolean }))} required />
                     <label
                         htmlFor="terms"
                         className="text-sm text-gray-600 whitespace-break-spaces"
