@@ -12,6 +12,6 @@ export interface Justification {
     hour: string
 }
 export async function sendJustification(data: Justification) {
-    const response = await api.post("/open_justification", data)
+    const response = await api.post("/justification/open", data)
     return response.data
 }

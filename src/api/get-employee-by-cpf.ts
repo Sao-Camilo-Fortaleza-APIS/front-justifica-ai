@@ -6,7 +6,7 @@ export interface Employee {
     id_tasy: number
 }
 export async function getEmployeeByCPF(cpf: string) {
-    const response = await api.get<Employee>(`/applicant_information/${cpf}`)
+    const response = await api.get<Employee>(`/applicant/information/${cpf}`)
 
     return response.data
 }
