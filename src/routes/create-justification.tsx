@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Mail, MonitorSmartphone, User2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 export default function TimeJustificationForm() {
     const navigate = useNavigate()
@@ -32,7 +32,6 @@ export default function TimeJustificationForm() {
         hour: "",
     })
     const employeeData = state?.employee as Employee
-    const { toast } = useToast()
 
     const { data: sectorsData } = useQuery({
         queryKey: ['sectors'],
@@ -68,22 +67,26 @@ export default function TimeJustificationForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        formData.date_occurrence.trim()
+        formData.phone.trim()
+        if (formData.complement === "" && formData.id_tasy === "" && formData.id_sector === "" && formData.phone === "" && formData.date_occurrence === "" && formData.reason === "" && formData.is_aware === false && formData.mat === null && formData.hour === "") {
+            setIsLoading(false)
+            return toast.error("Preencha todos os campos corretamente")
+        }
+        if (formData.hour > "23:59" || formData.hour < "00:00") {
+            setIsLoading(false)
+            return toast.error(`Horário "${formData.hour}" inválido`)
+        }
         formData.date_occurrence = `${formData.date_occurrence} ${formData.hour}`
         await sendJustification(formData)
             .then(() => {
                 setIsLoading(false)
-                toast({
-                    title: "Justificativa enviada",
-                    description: "A sua justificativa de ponto foi enviada para a gestão.",
-                })
+                toast.info("Jusitificativa enviada para a sua gestão")
                 // Reset form
-                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
-            }).catch(() => {
-                toast({
-                    title: "Falha ao enviar justificativa",
-                    description: "Ocorreu um erro ao enviar a justificativa de ponto, tente novamente.",
-                })
+                return setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
+            }).catch((error) => {
                 setIsLoading(false)
+                return toast.error(error.response.data.message)
             })
     }
 
@@ -126,6 +129,7 @@ export default function TimeJustificationForm() {
                             bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background 
                             focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         name="sector" id="sector"
+                        required
                     >
                         <option value="" className="">Selecione o setor</option>
                         {sectorsData?.map(sector => {
