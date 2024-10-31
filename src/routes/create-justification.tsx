@@ -79,11 +79,15 @@ export default function TimeJustificationForm() {
         }
         formData.date_occurrence = `${formData.date_occurrence} ${formData.hour}`
         await sendJustification(formData)
-            .then(() => {
+            .then((response) => {
+                console.log(response.order)
                 setIsLoading(false)
-                toast.info("Jusitificativa enviada para a sua gestão")
+                toast.info("Jusitificativa enviada para a sua gestão", {
+                    description: `${response.order}`,
+                })
                 // Reset form
-                return setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
+                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
+                return navigate("/", { replace: true })
             }).catch((error) => {
                 setIsLoading(false)
                 return toast.error(error.response.data.message)
