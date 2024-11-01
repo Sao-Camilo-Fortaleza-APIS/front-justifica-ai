@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { BaseSyntheticEvent, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 
 const gestorSchema = z.object({
@@ -16,6 +17,7 @@ const gestorSchema = z.object({
 type GestorFormData = z.infer<typeof gestorSchema>
 
 export function SignIn() {
+    const navigate = useNavigate()
     const [isGestor, setIsGestor] = useState(false)
 
     // useForm para Gestor
@@ -30,6 +32,10 @@ export function SignIn() {
     const onSubmitGestor = async (data: GestorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
         console.log('Autenticando como gestor...', data)
+        // tempo de espera simulando uma requisição
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+        navigate("/manager")
         // Redirecionamento ou ação após login de gestor
     }
 
