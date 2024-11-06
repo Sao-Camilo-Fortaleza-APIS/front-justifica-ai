@@ -1,5 +1,5 @@
-import { ApproveOrderDialog } from "@/components/approve-order-order";
-import { Button } from "@/components/ui/button";
+import { ApproveOrderDialog } from "@/components/approve-order-dialog";
+import { DisapproveOrderDialog } from "@/components/disapprove-order-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
@@ -11,8 +11,6 @@ export function Order() {
     console.log("order", state?.order);
 
     const order = state?.order as Justificativa
-
-
 
     return (
         <div className="flex flex-col gap-6 pb-5 justify-start h-screen overflow-x-hidden bg-background">
@@ -52,9 +50,9 @@ export function Order() {
             </div>
 
             <footer className="fixed bottom-0 w-full p-5 flex flex-col gap-2 bg-background">
-                <ApproveOrderDialog />
+                <ApproveOrderDialog {...order} />
 
-                <Button className="w-full h-14 bg-red-500 hover:bg-red-600">Reprovar</Button>
+                <DisapproveOrderDialog {...order} />
             </footer>
         </div>
     )
