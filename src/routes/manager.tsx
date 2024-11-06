@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import api from "@/lib/axios";
+import Cookies from "js-cookie";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,10 +22,16 @@ export type Justificativa = {
 };
 export function Approve() {
     const navigate = useNavigate()
+    const user = Cookies.get("j.ai.user")
     const [orders, setOrders] = useState<Justificativa[] | null>([])
 
     async function getOrders() {
-        await api.get('/justification/pendents/myguel').then((response) => {
+        if (!user) {
+            toast.error("Usuário logado não encontrado")
+            return navigate("/")
+        }
+
+        await api.get(`/justification/pendents/${user}`).then((response) => {
             setOrders(response.data)
         }).catch((error) => {
             console.error(error)
@@ -38,7 +45,7 @@ export function Approve() {
 
     return (
         <>
-            <div className="px-1 py-3 sm:p-6 max-w-4xl mx-auto space-y-4">
+            <div className="px-1 py-3 sm:p-6 max-w-4xl mx-2 sm:mx-auto sm:w-full space-y-4">
                 <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Justificativas pendentes</h2>
 
                 <div className="flex flex-col items-start gap-5 justify-between sm:flex-row sm:items-center">
@@ -57,9 +64,10 @@ export function Approve() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Data Pedido</TableHead>
+                                <TableHead className="text-center">Nº</TableHead>
                                 <TableHead>Nome</TableHead>
                                 <TableHead>Data Ocorrência</TableHead>
+                                <TableHead>Localização</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -69,9 +77,10 @@ export function Approve() {
                                     onClick={() => navigate(`/order`, { state: { order: j } })}
                                     className="border-t"
                                 >
-                                    <TableCell className="py-2 text-xs md:text-base">{j.date_order}</TableCell>
-                                    <TableCell className="py-2 text-xs md:text-base">{j.requester}</TableCell>
-                                    <TableCell className="py-2 text-xs md:text-base">{j.date_occurrence}</TableCell>
+                                    <TableCell className="py-2 text-xs md:text-sm">{j.number}</TableCell>
+                                    <TableCell className="py-2 text-xs md:text-sm">{j.requester}</TableCell>
+                                    <TableCell className="py-2 text-xs md:text-sm">{j.date_occurrence}</TableCell>
+                                    <TableCell className="py-2 text-xs md:text-sm">{j.location}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

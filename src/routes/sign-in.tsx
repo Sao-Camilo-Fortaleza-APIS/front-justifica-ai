@@ -3,16 +3,20 @@ import { CollaboratorForm } from '@/components/collaborator-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import api from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { AxiosError } from 'axios'
+import Cookies from 'js-cookie'
 import { Loader } from 'lucide-react'
-import { BaseSyntheticEvent, useState } from 'react'
+import { BaseSyntheticEvent, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const gestorSchema = z.object({
-    user: z.string(),
-    senha: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
+    username: z.string(),
+    password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
 })
 type GestorFormData = z.infer<typeof gestorSchema>
 
@@ -31,13 +35,27 @@ export function SignIn() {
 
     const onSubmitGestor = async (data: GestorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
-        console.log('Autenticando como gestor...', data)
-        // tempo de espera simulando uma requisição
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        try {
+            const response = await api.post("/login", data)
+            Cookies.set("j.ai.token", response.data.token)
+            Cookies.set("j.ai.user", response.data.user)
+            navigate("/manager", { state: { user: response.data.user } })
 
-        navigate("/manager")
-        // Redirecionamento ou ação após login de gestor
+        } catch (error) {
+            console.error(error)
+            if (error instanceof AxiosError) {
+                return toast.error(`${error?.response?.data?.message}`)
+            }
+            return toast.error("Houve um erro ao tentar fazer login")
+        }
     }
+
+    useEffect(() => {
+        const token = Cookies.get("j.ai.token")
+        if (token) {
+            navigate("/manager")
+        }
+    }, [navigate])
 
     return (
         <div className="flex h-screen">
@@ -68,11 +86,12 @@ export function SignIn() {
                                 id="user"
                                 placeholder="Digite seu usuário"
                                 className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                {...registerGestor('user')}
+                                {...registerGestor('username')}
                                 disabled={isSubmittingGestor}
+                                autoFocus
                             />
-                            {errorsGestor.user && (
-                                <p className="text-red-500 text-xs mt-1">{errorsGestor.user.message}</p>
+                            {errorsGestor.username && (
+                                <p className="text-red-500 text-xs mt-1">{errorsGestor.username.message}</p>
                             )}
                         </div>
 
@@ -86,11 +105,11 @@ export function SignIn() {
                                 id="senha"
                                 placeholder="Digite sua senha"
                                 className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                {...registerGestor('senha')}
+                                {...registerGestor('password')}
                                 disabled={isSubmittingGestor}
                             />
-                            {errorsGestor.senha && (
-                                <p className="text-red-500 text-xs mt-1">{errorsGestor.senha.message}</p>
+                            {errorsGestor.password && (
+                                <p className="text-red-500 text-xs mt-1">{errorsGestor.password.message}</p>
                             )}
                         </div>
 

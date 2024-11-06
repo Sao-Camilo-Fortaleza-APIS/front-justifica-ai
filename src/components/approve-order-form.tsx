@@ -1,5 +1,6 @@
 import api from "@/lib/axios"
 import { cn } from "@/lib/utils"
+import Cookies from "js-cookie"
 import { ComponentProps, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "./ui/button"
@@ -8,6 +9,12 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { Textarea } from "./ui/textarea"
 
 type ApproveOrderFormProps = ComponentProps<"form"> & { approve: boolean, orderId: number }
+
+enum TreatmentOptions {
+    Banco = "Utilizar banco de horas",
+    Abonar = "Abonar justificativa",
+    Descontar = "Descontar em folha"
+}
 
 export function ApproveOrderForm({ className, approve, orderId }: ApproveOrderFormProps) {
     const [formData, setFormData] = useState({
@@ -26,10 +33,11 @@ export function ApproveOrderForm({ className, approve, orderId }: ApproveOrderFo
     async function handleSendApprove(e: React.FormEvent) {
         e.preventDefault()
         try {
+            const user = Cookies.get("j.ai.user")
             const data = {
-                user: "MYGUEL.ANGELLO",
+                user: user,
                 order: orderId,
-                treatment: approve ? formData.treatment : "reprovar",
+                treatment: TreatmentOptions[formData.treatment as keyof typeof TreatmentOptions],
                 observation: formData.observation,
                 approve
             }

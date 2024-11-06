@@ -39,6 +39,8 @@ export default function TimeJustificationForm() {
         refetchOnWindowFocus: false,
     })
 
+    console.log("sectors", sectorsData)
+
     const handleDateChange = (selectedDate: Date | undefined) => {
         if (selectedDate) {
             console.log(selectedDate)

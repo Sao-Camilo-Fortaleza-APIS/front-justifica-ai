@@ -1,5 +1,6 @@
 import api from "@/lib/axios"
 import { cn } from "@/lib/utils"
+import Cookies from "js-cookie"
 import { ComponentProps, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "./ui/button"
@@ -14,8 +15,9 @@ export function DisapproveOrderForm({ className, approve, orderId }: DisapproveO
     async function handleSendApprove(e: React.FormEvent) {
         e.preventDefault()
         try {
+            const user = Cookies.get("j.ai.user")
             const data = {
-                user: "MYGUEL.ANGELLO",
+                user: user,
                 order: orderId,
                 treatment: "reprovar",
                 observation: observation,
