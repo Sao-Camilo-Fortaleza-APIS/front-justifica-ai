@@ -21,7 +21,7 @@ export function CollaboratorForm() {
     const {
         register: registerColaborador,
         handleSubmit: handleSubmitColaborador,
-        formState: { errors: errorsColaborador, isSubmitting: isSubmittingColaborador },
+        formState: { errors: errorsCollaborator, isSubmitting: isSubmittingColaborador },
     } = useForm<ColaboradorFormData>({
         resolver: zodResolver(colaboradorSchema),
     });
@@ -55,8 +55,8 @@ export function CollaboratorForm() {
                     className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     {...registerColaborador('cpf')}
                 />
-                {errorsColaborador.cpf && (
-                    <p className="text-red-500 text-xs mt-1">{errorsColaborador.cpf.message}</p>
+                {errorsCollaborator.cpf && (
+                    <p className="text-red-500 text-xs mt-1">{errorsCollaborator.cpf.message}</p>
                 )}
             </div>
 

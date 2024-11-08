@@ -28,7 +28,7 @@ export function Approve() {
     async function getOrders() {
         if (!user) {
             toast.error("Usuário logado não encontrado")
-            return navigate("/")
+            return navigate("/manager/login")
         }
 
         await api.get(`/justification/pendents/${user}`).then((response) => {
@@ -74,7 +74,7 @@ export function Approve() {
                             {Array.isArray(orders) && orders?.map((j, i) => (
                                 <TableRow
                                     key={i}
-                                    onClick={() => navigate(`/order`, { state: { order: j } })}
+                                    onClick={() => navigate(`/manager/order`, { state: { order: j } })}
                                     className="border-t"
                                 >
                                     <TableCell className="py-2 text-xs md:text-sm">{j.number}</TableCell>
