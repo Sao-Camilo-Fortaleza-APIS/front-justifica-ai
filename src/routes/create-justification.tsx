@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { Mail, MonitorSmartphone, User2 } from "lucide-react"
+import { IdCard, Mail, User2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -120,7 +120,7 @@ export default function TimeJustificationForm() {
                         <span className="">{employeeData?.email}</span>
                     </div>
                     <div className="flex items-center">
-                        <MonitorSmartphone className="mr-2 h-4 w-4" />
+                        <IdCard className="mr-2 h-4 w-4" />
                         <span>{employeeData?.mat}</span>
                     </div>
                 </div>

@@ -1,10 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
+import { SelectSector } from "@/components/select-sector";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -23,38 +25,42 @@ export type Justificativa = {
 export function Approve() {
     const navigate = useNavigate()
     const user = Cookies.get("j.ai.user")
-    const [orders, setOrders] = useState<Justificativa[] | null>([])
+    const [collaboratorFilter, setCollaboratorFilter] = useState<string>("")
 
-    async function getOrders() {
-        if (!user) {
-            toast.error("Usuário logado não encontrado")
-            return navigate("/manager/login")
+    const { data: ordersResponse, isLoading, isFetching } = useQuery<Justificativa[]>({
+        queryKey: ["justification-pendents"],
+        queryFn: async () => {
+            if (!user) {
+                toast.error("Usuário não autenticado")
+                return navigate("/manager/login")
+            }
+
+            const response = await api.get(`/justification/pendents/${user}`)
+            return response.data
         }
+    })
 
-        await api.get(`/justification/pendents/${user}`).then((response) => {
-            setOrders(response.data)
-        }).catch((error) => {
-            console.error(error)
-            toast.error("Erro ao buscar justificativas")
-        })
-    }
+    const filteredOrders = collaboratorFilter ? ordersResponse?.filter(j => j.requester.toLowerCase().includes(collaboratorFilter.toLowerCase())) : ordersResponse
 
-    useEffect(() => {
-        getOrders()
-    }, [])
+    // TODO: Implementar a função de filtros por setor
 
     return (
         <>
+            <Header />
             <div className="px-1 py-3 sm:p-6 max-w-4xl mx-2 sm:mx-auto sm:w-full space-y-4">
-                <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Justificativas pendentes</h2>
+                <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Pendentes</h2>
 
                 <div className="flex flex-col items-start gap-5 justify-between sm:flex-row sm:items-center">
                     <form className="flex items-center gap-2">
-                        <Input className="" placeholder="Pesquisar por colaborador" />
-                        <Button type="submit" className="bg-slate-900 hover:bg-slate-800">
+                        <Input value={collaboratorFilter} onChange={(e) => setCollaboratorFilter(e.target.value)} className="" placeholder="Pesquisar por nome..." />
+
+                        <SelectSector />
+
+                        {/* <Button type="submit" className="bg-slate-900 hover:bg-slate-800">
                             <Search className="h-4 w-4 mr-2" />
-                            Filtrar por data
-                        </Button>
+                            Filtrar
+                        </Button> */}
+                        {isFetching && <Loader className="size-4 animate-spin text-zinc-500" />}
                     </form>
 
                     {/*  <DrawerDialog /> */}
@@ -71,11 +77,11 @@ export function Approve() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {Array.isArray(orders) && orders?.map((j, i) => (
+                            {filteredOrders?.map((j, i) => (
                                 <TableRow
                                     key={i}
                                     onClick={() => navigate(`/manager/order`, { state: { order: j } })}
-                                    className="border-t"
+                                    className="border-t hover:cursor-pointer hover:bg-zinc-100"
                                 >
                                     <TableCell className="py-2 text-xs md:text-sm">{j.number}</TableCell>
                                     <TableCell className="py-2 text-xs md:text-sm">{j.requester}</TableCell>
