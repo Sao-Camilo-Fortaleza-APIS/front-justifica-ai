@@ -8,16 +8,18 @@ export function Hero() {
     const navigate = useNavigate()
     const { logout } = useAppContext()
     const [user, setUser] = useState<string>('')
-    const userLogged = Cookies.get('user')
+    const userLogged = Cookies.get('j.ai.user')
+    const token = Cookies.get('j.ai.token')
 
     function handleSignOut() {
-        Cookies.remove('user')
+        Cookies.remove('j.ai.user')
+        Cookies.remove('j.ai.token')
         logout()
         setUser('')
     }
 
     useEffect(() => {
-        if (userLogged) {
+        if (userLogged && token) {
             setUser(userLogged)
         }
     }, [])
@@ -27,12 +29,12 @@ export function Hero() {
             setUser(userLogged)
         } else {
             setUser('')
-            navigate("/")
+            navigate("/manager/login")
         }
     }, [user, userLogged, navigate])
     return (
-        <div className="flex items-center justify-center gap-2">
-            <span className="text-xs">{user && user}</span>
+        <div className="flex items-center justify-end gap-2">
+            <span className="text-xs hidden sm:block">{user && user}</span>
             <Button
                 onClick={() => handleSignOut()}
                 variant="link" size="sm"

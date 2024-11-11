@@ -2,10 +2,10 @@ import { Hero } from "./hero";
 
 export function Header() {
   return (
-    <header className="flex justify-between items-center sm:px-60 p-1 shadow bg-white">
+    <header className="flex justify-between items-center sm:px-6 p-1 shadow bg-white">
       <span className="flex items-center gap-2">
         <img className="size-12" src="/logo_sc_vazada.png" alt="Logo São Camilo" />
-        <h1 className="text-xl font-bold text-zinc-800">Justifica Aí</h1>
+        <h1 className="text-xl font-bold text-zinc-800">Justifica AI</h1>
       </span>
 
       <Hero />
