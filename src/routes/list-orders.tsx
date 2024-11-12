@@ -48,7 +48,7 @@ export function Approve() {
         <>
             <Header />
             <div className="px-1 py-3 sm:p-6 max-w-4xl mx-2 sm:mx-auto sm:w-full space-y-4">
-                <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Pendentes</h2>
+                <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Pendentes de aprovação</h2>
 
                 <div className="flex flex-col items-start gap-5 justify-between sm:flex-row sm:items-center">
                     <form className="flex items-center gap-2">
