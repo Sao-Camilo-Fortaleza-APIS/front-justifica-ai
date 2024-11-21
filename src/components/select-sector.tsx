@@ -1,4 +1,4 @@
-
+import { getSectors, Sector, Sectors } from "@/api/gete-sectors"
 import { Button } from "@/components/ui/button"
 import {
     Command,
@@ -18,54 +18,35 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { useQueryClient } from "@tanstack/react-query"
 import { useMediaQuery } from "@uidotdev/usehooks"
-import { useState } from "react"
-
-type Status = {
-    value: string
-    label: string
+import { useEffect, useState } from "react"
+type SelectSectorProps = {
+    sectors?: Sectors
+    onSelect?: (sector: Sector) => void
 }
-
-const statuses: Status[] = [
-    {
-        value: "backlog",
-        label: "Backlog",
-    },
-    {
-        value: "todo",
-        label: "Todo",
-    },
-    {
-        value: "in progress",
-        label: "In Progress",
-    },
-    {
-        value: "done",
-        label: "Done",
-    },
-    {
-        value: "canceled",
-        label: "Canceled",
-    },
-]
-
-export function SelectSector() {
+export function SelectSector({ sectors, onSelect }: SelectSectorProps) {
     const [open, setOpen] = useState(false)
     const isDesktop = useMediaQuery("(min-width: 768px)")
-    const [selectedStatus, setSelectedStatus] = useState<Status | null>(
-        null
-    )
+    const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
+
+    const handleSelectSector = (sector: Sector | null) => {
+        setSelectedSector(sector)
+        if (onSelect) {
+            onSelect(sector!)
+        }
+    }
 
     if (isDesktop) {
         return (
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[150px] justify-start">
-                        {selectedStatus ? <>{selectedStatus.label}</> : <>+ Set status</>}
+                    <Button variant="outline" className="justify-start w-fit">
+                        {selectedSector ? <>{selectedSector.ds_localizacao}</> : <>Selecionar setor</>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[200px] p-0" align="start">
-                    <StatusList setOpen={setOpen} setSelectedStatus={setSelectedStatus} />
+                    <SectorList list={sectors} setOpen={setOpen} setSelectedSector={handleSelectSector} />
                 </PopoverContent>
             </Popover>
         )
@@ -75,43 +56,88 @@ export function SelectSector() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="outline" className="w-[150px] justify-start">
-                    {selectedStatus ? <>{selectedStatus.label}</> : <>+ Set status</>}
+                    {selectedSector ? <>{selectedSector.ds_localizacao}</> : <>Selecionar setor</>}
                 </Button>
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <StatusList setOpen={setOpen} setSelectedStatus={setSelectedStatus} />
+                    <SectorList list={sectors} setOpen={setOpen} setSelectedSector={handleSelectSector} />
                 </div>
             </DrawerContent>
         </Drawer>
     )
 }
 
-function StatusList({
+function SectorList({
     setOpen,
-    setSelectedStatus,
+    setSelectedSector,
+    list
 }: {
     setOpen: (open: boolean) => void
-    setSelectedStatus: (status: Status | null) => void
+    setSelectedSector: (sector: Sector | null) => void
+    list?: Sectors
 }) {
+    const queryClient = useQueryClient()
+    const [sectorsData, setSectorsData] = useState<Sectors>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        const loadSectors = async () => {
+            if (list && list.length > 0) {
+                setSectorsData(list)
+                setIsLoading(false)
+                return
+            }
+            try {
+                const data = await queryClient.ensureQueryData<Sectors>({
+                    queryKey: ['sectors'],
+                    queryFn: getSectors
+                })
+                setSectorsData(data || [])
+            } catch (error) {
+                console.error("Erro ao carregar setores:", error)
+                setSectorsData([])
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        loadSectors()
+    }, [queryClient, list])
+
+    if (isLoading) {
+        return <div>Carregando setores...</div>
+    }
+
     return (
         <Command>
-            <CommandInput placeholder="Filter status..." />
+            <CommandInput placeholder="Filtre um setor..." />
+            <Button
+                variant="link"
+                size="sm"
+                className="w-full text-muted-foreground"
+                onClick={() => {
+                    setSelectedSector(null)
+                    setOpen(false)
+                }}
+            >
+                Limpar filtro
+            </Button>
             <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup>
-                    {statuses.map((status) => (
+                    {sectorsData.map((sector) => (
                         <CommandItem
-                            key={status.value}
-                            value={status.value}
+                            key={sector.nr_sequencia}
+                            value={sector.ds_localizacao}
                             onSelect={(value) => {
-                                setSelectedStatus(
-                                    statuses.find((priority) => priority.value === value) || null
+                                setSelectedSector(
+                                    sectorsData.find((sector) => sector.ds_localizacao === value) || null
                                 )
                                 setOpen(false)
                             }}
                         >
-                            {status.label}
+                            {sector.ds_localizacao}
                         </CommandItem>
                     ))}
                 </CommandGroup>

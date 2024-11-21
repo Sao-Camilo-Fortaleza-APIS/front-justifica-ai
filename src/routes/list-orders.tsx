@@ -1,11 +1,13 @@
+import { Sector, Sectors } from "@/api/gete-sectors";
 import { Header } from "@/components/header";
 import { SelectSector } from "@/components/select-sector";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import { Loader } from "lucide-react";
+import { Loader, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -26,6 +28,7 @@ export function Approve() {
     const navigate = useNavigate()
     const user = Cookies.get("j.ai.user")
     const [collaboratorFilter, setCollaboratorFilter] = useState<string>("")
+    const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
 
     const { data: ordersResponse, isLoading, isFetching } = useQuery<Justificativa[]>({
         queryKey: ["justification-pendents"],
@@ -39,9 +42,23 @@ export function Approve() {
             return response.data
         }
     })
+    const locationsFromOrders = Array.from(
+        new Set(ordersResponse?.map((j) => j.location))
+    )
+    const sectors: Sectors = locationsFromOrders.map((location, index) => ({
+        ds_localizacao: location,
+        nr_sequencia: index + 1, // Sequência começando em 1
+    }))
 
-    const filteredOrders = collaboratorFilter ? ordersResponse?.filter(j => j.requester.toLowerCase().includes(collaboratorFilter.toLowerCase())) : ordersResponse
+    const filteredOrdersByCollaborator = collaboratorFilter ? ordersResponse?.filter(j => j.requester.toLowerCase().includes(collaboratorFilter.toLowerCase())) : ordersResponse
+    const filteredOrdersBySector = selectedSector ? filteredOrdersByCollaborator?.filter(j => j.location === selectedSector.ds_localizacao) : filteredOrdersByCollaborator
+    const filteredOrders = filteredOrdersBySector
 
+    function handleRemoveCollaborator() {
+        setCollaboratorFilter("")
+    }
+
+    console.log("filteredOrders with sector", filteredOrders)
     // TODO: Implementar a função de filtros por setor
 
     return (
@@ -52,14 +69,28 @@ export function Approve() {
 
                 <div className="flex flex-col items-start gap-5 justify-between sm:flex-row sm:items-center">
                     <form className="flex items-center gap-2">
-                        <Input value={collaboratorFilter} onChange={(e) => setCollaboratorFilter(e.target.value)} className="" placeholder="Pesquisar por nome..." />
+                        <div
+                            className="flex outline-none ring-zinc-100 ring rounded-md border border-input"
+                        >
+                            <Input
+                                value={collaboratorFilter}
+                                onChange={(e) => setCollaboratorFilter(e.target.value)}
+                                className="bg-transparent border-none outline-none ring-transparent shadow-none focus-visible:ring-0"
+                                placeholder="Pesquisar por nome..."
+                            />
+                            <Button
+                                type="reset"
+                                variant="link"
+                                size='icon'
+                                onClick={() => setCollaboratorFilter("")}
+                                className="flex items-center justify-center"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                            </Button>
+                        </div>
 
-                        <SelectSector />
+                        <SelectSector sectors={sectors} onSelect={(sector) => setSelectedSector(sector)} />
 
-                        {/* <Button type="submit" className="bg-slate-900 hover:bg-slate-800">
-                            <Search className="h-4 w-4 mr-2" />
-                            Filtrar
-                        </Button> */}
                         {isFetching && <Loader className="size-4 animate-spin text-zinc-500" />}
                     </form>
 
