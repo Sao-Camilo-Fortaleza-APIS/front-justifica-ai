@@ -40,8 +40,11 @@ export function DateTimePicker({ onDateChange, onTimeChange }: DatePickerProps) 
         >
           <CalendarIcon className="mr-2 h-4 w-4 " />
           {date
-            ? (format(date, "EEEEEE, dd MMM, yyyy", { locale: ptBR }) + " às " + (time ? time[0] + time[1] + ":" + time[2] + time[3] : ""))
-            : <span>Selecione uma data</span>
+            ? (
+              `${format(date, "EEEEEE, dd MMM, yyyy", { locale: ptBR })}` + (time ? ` às ${time.substring(0, 2)}:${time.substring(2)}` : "")
+            ) : (
+              <span>Selecione uma data</span>
+            )
           }
         </Button>
       </PopoverTrigger>
