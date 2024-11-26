@@ -1,7 +1,11 @@
 import { createBrowserRouter } from "react-router-dom"
 import { App } from "./app"
-import { Approve } from "./routes/approve"
+import { RequireAuth } from "./components/require-auth"
 import TimeJustificationForm from "./routes/create-justification"
+import { Approve } from "./routes/list-orders"
+import { Order } from "./routes/order-details"
+import { SignInCollaborator } from "./routes/sign-in-collaborator"
+import { SignInManager } from "./routes/sign-in-manager"
 
 export const router = createBrowserRouter([
     {
@@ -10,11 +14,31 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
+                element: <SignInCollaborator />
+            },
+            {
+                path: "/create-justification",
                 element: <TimeJustificationForm />
             },
             {
-                path: '/approve',
-                element: <Approve />,
+                path: "/manager/login",
+                element: <SignInManager />
+            },
+            {
+                path: '/manager',
+                element: (
+                    <RequireAuth>
+                        <Approve />
+                    </RequireAuth>
+                ),
+            },
+            {
+                path: '/manager/order',
+                element: (
+                    <RequireAuth>
+                        <Order />
+                    </RequireAuth>
+                ),
             }
         ]
     }

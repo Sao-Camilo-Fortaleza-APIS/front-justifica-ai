@@ -1,3 +1,4 @@
+import api from "@/lib/axios"
 
 export type Sectors = Sector[]
 
@@ -7,7 +8,6 @@ export interface Sector {
 }
 
 export async function getSectors() {
-    const response = await fetch("http://10.10.200.101:4321/get/setor")
-    const sectors = await response.json()
-    return sectors as Sectors
+    const response = await api.get("/sectors")
+    return response.data as Sectors
 }
