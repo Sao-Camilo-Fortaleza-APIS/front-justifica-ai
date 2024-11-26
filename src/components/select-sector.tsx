@@ -41,7 +41,7 @@ export function SelectSector({ sectors, onSelect }: SelectSectorProps) {
         return (
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className="justify-start w-fit">
+                    <Button variant="outline" className="justify-start w-fit max-w-48 overflow-hidden">
                         {selectedSector ? <>{selectedSector.ds_localizacao}</> : <>Selecionar setor</>}
                     </Button>
                 </PopoverTrigger>
