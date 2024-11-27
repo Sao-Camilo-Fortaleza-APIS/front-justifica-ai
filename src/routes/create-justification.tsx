@@ -1,7 +1,8 @@
 import { Employee } from "@/api/get-employee-by-cpf"
-import { getSectors } from "@/api/gete-sectors"
+import { getSectors, Sector } from "@/api/gete-sectors"
 import { Justification, sendJustification } from "@/api/send-justification"
 import { DateTimePicker } from "@/components/datetime-picker"
+import { SelectSector } from "@/components/select-sector"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -21,6 +22,7 @@ export default function TimeJustificationForm() {
     const navigate = useNavigate()
     const { state } = useLocation()
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
         id_tasy: "",
@@ -69,7 +71,7 @@ export default function TimeJustificationForm() {
         setIsLoading(true)
         if (!formData.hour) {
             setIsLoading(false)
-            return toast.error("Selecione o setor")
+            return toast.error("Selecione o horário")
         }
         if (!formData.date_occurrence) {
             setIsLoading(false)
@@ -154,6 +156,7 @@ export default function TimeJustificationForm() {
                                 )
                             })}
                         </select>
+                        <SelectSector sectors={sectorsData} onSelect={(sector) => setSelectedSector(sector)} />
                     </div>
                     <div className="flex flex-col space-y-2">
                         <Label htmlFor="date">Data da ocorrência</Label>
