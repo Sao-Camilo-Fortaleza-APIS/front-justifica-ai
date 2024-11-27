@@ -54,10 +54,6 @@ export function Approve() {
     const filteredOrdersBySector = selectedSector ? filteredOrdersByCollaborator?.filter(j => j.location === selectedSector.ds_localizacao) : filteredOrdersByCollaborator
     const filteredOrders = filteredOrdersBySector
 
-    function handleRemoveCollaborator() {
-        setCollaboratorFilter("")
-    }
-
     console.log("filteredOrders with sector", filteredOrders)
     // TODO: Implementar a função de filtros por setor
 
