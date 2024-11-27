@@ -28,12 +28,7 @@ export function CollaboratorForm() {
 
     const onSubmitColaborador = async (data: ColaboradorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
-        console.log('Autenticando como colaborador...', data)
-        // Redirecionamento ou ação após login de colaborador
-
         await getEmployeeByCPF(data.cpf).then((response) => {
-            console.log(response)
-            toast.success(`${response.name} encontrado!`)
             navigate('/create-justification', { state: { employee: response } })
         }).catch((error) => {
             console.error(error)
