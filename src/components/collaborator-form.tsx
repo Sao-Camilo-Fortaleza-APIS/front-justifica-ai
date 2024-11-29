@@ -47,6 +47,7 @@ export function CollaboratorForm() {
                     type="text"
                     id="cpf"
                     placeholder="Digite seu CPF"
+                    autoComplete="off"
                     className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     {...registerColaborador('cpf')}
                 />

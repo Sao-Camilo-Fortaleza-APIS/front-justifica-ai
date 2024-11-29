@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { IdCard, Mail } from "lucide-react"
@@ -22,6 +22,7 @@ export default function TimeJustificationForm() {
     const navigate = useNavigate()
     const { state } = useLocation()
     const [isLoading, setIsLoading] = useState(false)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
@@ -40,6 +41,8 @@ export default function TimeJustificationForm() {
         queryKey: ['sectors'],
         queryFn: getSectors,
         refetchOnWindowFocus: false,
+        enabled: true,
+        placeholderData: keepPreviousData,
     })
 
     const handleDateChange = (selectedDate: Date | undefined) => {
