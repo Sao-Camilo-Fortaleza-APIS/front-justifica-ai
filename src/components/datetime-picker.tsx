@@ -17,15 +17,15 @@ import { CalendarIcon } from "@radix-ui/react-icons"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { useState } from "react"
+import { HTMLAttributes, useState } from "react"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp"
 
-type DatePickerProps = {
+interface DatePickerProps extends HTMLAttributes<HTMLDivElement> {
   onDateChange: (date: Date | undefined) => void
   onTimeChange: (time: string | undefined) => void
 }
 
-export function DateTimePicker({ onDateChange, onTimeChange }: DatePickerProps) {
+export function DateTimePicker({ onDateChange, onTimeChange, className }: DatePickerProps) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [date, setDate] = useState<Date>()
@@ -42,8 +42,9 @@ export function DateTimePicker({ onDateChange, onTimeChange }: DatePickerProps) 
 
   const trigger = (
     <Button variant={'outline'} className={cn(
-      "p-2 justify-start text-left font-normal sm:w-[240px] sm:p-4",
-      !date && "text-muted-foreground"
+      "p-2 justify-start text-left font-normal sm:w-full sm:p-4",
+      !date && "text-muted-foreground",
+      className
     )}
     >
       <CalendarIcon className="mr-2 h-4 w-4 " />
