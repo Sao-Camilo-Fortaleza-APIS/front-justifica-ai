@@ -140,10 +140,11 @@ export default function TimeJustificationForm() {
                 </Card>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4 w-full mt-4">
-                <div className="flex flex-col items-start gap-2">
-                    <div className="space-y-2">
+                <div className="flex flex-col items-start sm:flex-row gap-5">
+                    {/* SECTOR */}
+                    <div className="w-full flex flex-col space-y-2">
                         <Label htmlFor="sector">Setor</Label>
-                        <select
+                        {/* <select
                             value={formData.id_sector}
                             onChange={(e) => handleSectorSelectedChange(e.target.value)}
                             className="flex h-9 w-full sm:w-60 items-center justify-between whitespace-nowrap rounded-md border border-input 
@@ -158,12 +159,20 @@ export default function TimeJustificationForm() {
                                     <option key={sector.nr_sequencia} value={sector.nr_sequencia}>{sector.ds_localizacao}</option>
                                 )
                             })}
-                        </select>
-                        <SelectSector sectors={sectorsData} onSelect={(sector) => setSelectedSector(sector)} />
+                        </select> */}
+                        <SelectSector
+                            sectors={sectorsData}
+                            onSelectSector={(sector) => setSelectedSector(sector)}
+                        />
                     </div>
-                    <div className="flex flex-col space-y-2">
+                    {/* DATE */}
+                    <div className="w-full flex flex-col space-y-2">
                         <Label htmlFor="date">Data da ocorrência</Label>
-                        <DateTimePicker onDateChange={handleDateChange} onTimeChange={handleTimeChange} />
+                        <DateTimePicker
+                            onDateChange={handleDateChange}
+                            onTimeChange={handleTimeChange}
+                            className="w-full"
+                        />
                     </div>
                 </div>
                 <div className="space-y-2">
@@ -171,6 +180,7 @@ export default function TimeJustificationForm() {
                     <RadioGroup
                         onValueChange={handleRadioChange}
                         required
+                        className="flex space-x-4"
                     >
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="ausencia" id="ausencia" />
@@ -185,16 +195,16 @@ export default function TimeJustificationForm() {
                             <Label htmlFor="outros">Outros</Label>
                         </div>
                     </RadioGroup>
-
                 </div>
-                <div className="space-y-2">
+                <div className="w-full space-y-2">
                     <Label htmlFor="phone">Contato/Ramal</Label>
                     <Input
                         name="phone"
-                        type="tel"
+                        type="number"
                         value={formData.phone}
+                        min={0}
                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-60"
+                        className="w-full sm:w-1/2"
                         required
                     />
                 </div>
@@ -206,7 +216,7 @@ export default function TimeJustificationForm() {
                         placeholder=""
                         value={formData.complement}
                         onChange={handleTextareaChange}
-                        className="w-2/3"
+                        className="w-1/2"
                         required
                         rows={5}
                     />
