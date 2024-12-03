@@ -18,44 +18,48 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { useMediaQuery } from "@uidotdev/usehooks"
-import { useEffect, useState } from "react"
-type SelectSectorProps = {
+import { HTMLAttributes, useEffect, useState } from "react"
+interface SelectSectorProps extends HTMLAttributes<HTMLDivElement> {
     sectors?: Sectors
-    onSelect?: (sector: Sector) => void
+    onSelectSector?: (sector: Sector) => void
 }
-export function SelectSector({ sectors, onSelect }: SelectSectorProps) {
+export function SelectSector({ sectors, onSelectSector, className }: SelectSectorProps) {
     const [open, setOpen] = useState(false)
     const isDesktop = useMediaQuery("(min-width: 768px)")
     const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
 
     const handleSelectSector = (sector: Sector | null) => {
         setSelectedSector(sector)
-        if (onSelect) {
-            onSelect(sector!)
+        if (onSelectSector) {
+            onSelectSector(sector!)
         }
     }
 
     if (isDesktop) {
         return (
             <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className="justify-start w-fit max-w-48 overflow-hidden">
+                <PopoverTrigger asChild >
+                    <Button
+                        variant="outline"
+                        className={cn("justify-start w-full overflow-hidden font-normal antialiased", className)}
+                    >
                         {selectedSector ? <>{selectedSector.ds_localizacao}</> : <>Selecionar setor</>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[200px] p-0" align="start">
                     <SectorList list={sectors} setOpen={setOpen} setSelectedSector={handleSelectSector} />
                 </PopoverContent>
-            </Popover>
+            </Popover >
         )
     }
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="outline" className="w-[150px] justify-start">
+                <Button variant="outline" className={cn("w-full justify-start overflow-hidden font-normal antialiased", className)}>
                     {selectedSector ? <>{selectedSector.ds_localizacao}</> : <>Selecionar setor</>}
                 </Button>
             </DrawerTrigger>
@@ -94,10 +98,11 @@ function SectorList({
                     queryFn: getSectors
                 })
                 setSectorsData(data || [])
+                setIsLoading(false)
+
             } catch (error) {
                 console.error("Erro ao carregar setores:", error)
                 setSectorsData([])
-            } finally {
                 setIsLoading(false)
             }
         }
@@ -106,12 +111,12 @@ function SectorList({
     }, [queryClient, list])
 
     if (isLoading) {
-        return <div>Carregando setores...</div>
+        return <span className="text-sm">Carregando setores...</span>
     }
 
     return (
         <Command>
-            <CommandInput placeholder="Filtre um setor..." />
+            <CommandInput autoFocus placeholder="Filtre um setor..." />
             <Button
                 variant="link"
                 size="sm"
@@ -124,7 +129,7 @@ function SectorList({
                 Limpar filtro
             </Button>
             <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandEmpty>Resultado não encontrado</CommandEmpty>
                 <CommandGroup>
                     {sectorsData.map((sector) => (
                         <CommandItem
