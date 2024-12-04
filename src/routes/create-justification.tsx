@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
@@ -17,6 +17,13 @@ import { IdCard, Mail } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+
+enum ReasonOptions {
+    ausencia = "Ausência de batida",
+    falta = "Falta",
+    folgaprogramada = "Folga programada",
+    outros = "Outros motivos",
+}
 
 export default function TimeJustificationForm() {
     const navigate = useNavigate()
@@ -58,12 +65,12 @@ export default function TimeJustificationForm() {
     }
 
     const handleRadioChange = (value: string) => {
-        setFormData(prev => ({ ...prev, reason: value }))
+        setFormData(prev => ({
+            ...prev,
+            reason: ReasonOptions[value as keyof typeof ReasonOptions],
+        }))
     }
 
-    const handleSectorSelectedChange = (value: string) => {
-        setFormData(prev => ({ ...prev, id_sector: value }))
-    }
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, complement: e.target.value }))
     }
@@ -72,6 +79,7 @@ export default function TimeJustificationForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        if (selectedSector) { setFormData(prev => ({ ...prev, id_sector: selectedSector?.nr_sequencia.toString() })) }
         if (!formData.hour) {
             setIsLoading(false)
             return toast.error("Selecione o horário")
@@ -111,10 +119,10 @@ export default function TimeJustificationForm() {
 
         setFormData(prev => ({ ...prev, mat: employeeData.mat, id_tasy: employeeData.id_tasy.toString() }))
         // setFormData(prev => ({ ...prev, id_tasy: employeeData.id_tasy }))
-    }, [])
+    }, [employeeData, navigate])
 
     return (
-        <div className="p-6 max-w-4xl mx-auto space-y-4 bg-white rounded-lg shadow-md">
+        <div className="p-6 max-w-4xl mx-auto space-y-4 bg-background rounded-lg shadow-md">
             <h1 className="text-2xl font-bold mb-6">Justificativa de Ponto</h1>
             {/* CARD */}
             <div className="flex items-center justify-center">
@@ -125,7 +133,10 @@ export default function TimeJustificationForm() {
                     <CardContent className="text-white">
                         <CardDescription className="text-white">
                             <span className="text-lg text-left">
-                                {employeeData?.cpf}
+                                {employeeData?.cpf.slice(0, 3)}.
+                                {employeeData?.cpf.slice(3, 6)}.
+                                {employeeData?.cpf.slice(6, 9)}-
+                                {employeeData?.cpf.slice(9, 11)}
                             </span>
                             <div className="flex items-center">
                                 <Mail className="mr-2 h-4 w-4" />
@@ -139,10 +150,11 @@ export default function TimeJustificationForm() {
                     </CardContent>
                 </Card>
             </div>
+
             <form onSubmit={handleSubmit} className="space-y-4 w-full mt-4">
-                <div className="flex flex-col items-start sm:flex-row gap-5">
+                <div className="w-full flex flex-col items-start sm:flex-row gap-5">
                     {/* SECTOR */}
-                    <div className="w-full flex flex-col space-y-2">
+                    <div className="w-1/2 flex flex-col space-y-4">
                         <Label htmlFor="sector">Setor</Label>
                         {/* <select
                             value={formData.id_sector}
@@ -165,19 +177,11 @@ export default function TimeJustificationForm() {
                             onSelectSector={(sector) => setSelectedSector(sector)}
                         />
                     </div>
-                    {/* DATE */}
-                    <div className="w-full flex flex-col space-y-2">
-                        <Label htmlFor="date">Data da ocorrência</Label>
-                        <DateTimePicker
-                            onDateChange={handleDateChange}
-                            onTimeChange={handleTimeChange}
-                            className="w-full"
-                        />
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="time">Motivo</Label>
-                    <RadioGroup
+
+                    {/* REASON */}
+                    <div className="w-1/2 flex flex-col space-y-4">
+                        <Label htmlFor="time">Motivo</Label>
+                        {/* <RadioGroup
                         onValueChange={handleRadioChange}
                         required
                         className="flex space-x-4"
@@ -191,24 +195,54 @@ export default function TimeJustificationForm() {
                             <Label htmlFor="falta">Falta sem justificativa</Label>
                         </div>
                         <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="folgaprogramada" id="folgaprogramada" />
+                            <Label htmlFor="folgaprogramada">Folga programada</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
                             <RadioGroupItem value="outros" id="outros" />
                             <Label htmlFor="outros">Outros</Label>
                         </div>
-                    </RadioGroup>
+                        </RadioGroup> */}
+                        <Select onValueChange={handleRadioChange} required>
+                            <SelectTrigger className="w-full flex space-x-4 bg-zinc-50 hover:bg-zinc-100">
+                                <SelectValue placeholder="Selecione um motivo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(ReasonOptions).map(([key, value]) => (
+                                    <SelectItem key={key} value={key}>{value}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
-                <div className="w-full space-y-2">
-                    <Label htmlFor="phone">Contato/Ramal</Label>
-                    <Input
-                        name="phone"
-                        type="number"
-                        value={formData.phone}
-                        min={0}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full sm:w-1/2"
-                        required
-                    />
+
+                <div className="flex flex-col items-start sm:flex-row gap-5">
+                    {/* DATE */}
+                    <div className="w-1/2 flex flex-col space-y-4">
+                        <Label htmlFor="date">Data da ocorrência</Label>
+                        <DateTimePicker
+                            onDateChange={handleDateChange}
+                            onTimeChange={handleTimeChange}
+                            className="w-full"
+                        />
+                    </div>
+                    {/* PHONE */}
+                    <div className="w-1/2 flex flex-col space-y-4">
+                        <Label htmlFor="phone">Contato/Ramal</Label>
+                        <Input
+                            name="phone"
+                            type="number"
+                            value={formData.phone}
+                            min={0}
+                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                            className="w-full sm:w-full bg-zinc-50 hover:bg-zinc-100"
+                            required
+                        />
+                    </div>
                 </div>
-                <div className="space-y-2">
+
+                {/* COMPLEMENT */}
+                <div className="space-y-4">
                     <Label htmlFor="complement">Complemento</Label>
                     <Textarea
                         id="complement"
@@ -216,12 +250,12 @@ export default function TimeJustificationForm() {
                         placeholder=""
                         value={formData.complement}
                         onChange={handleTextareaChange}
-                        className="w-1/2"
+                        className="w-full bg-zinc-50 hover:bg-zinc-100"
                         required
                         rows={5}
                     />
                 </div>
-                <div className="flex items-center space-x-2 space-y-2">
+                <div className="flex items-center space-x-2 space-y-4">
                     <Checkbox id="terms" checked={formData.is_aware} onCheckedChange={(e) => setFormData(prev => ({ ...prev, is_aware: e as boolean }))} required />
                     <label
                         htmlFor="terms"
