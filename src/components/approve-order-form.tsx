@@ -38,13 +38,33 @@ export function ApproveOrderForm({ className, approve, orderId }: ApproveOrderFo
     })
 
     const { mutateAsync } = useMutation({
-        mutationFn: async (data: OrderApprovalData) => handleSendApprove(data),
+        mutationFn: async ({ observation, treatment }: OrderApprovalData) => {
+            console.log({ observation, treatment })
+            handleSendApprove({ observation, treatment })
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["justification-pendents"] })
         }
     })
 
     async function handleSendApprove({ observation, treatment }: OrderApprovalData) {
+        if (!Cookies.get("j.ai.user")) {
+            toast.error("Usuário não autenticado")
+            return navigate("/manager/login")
+        }
+        if (!orderId) {
+            return toast.error("Erro ao enviar aprovação, sem número da ordem")
+        }
+        if (!observation) {
+            return toast.error("Faltando observação")
+        }
+        if (!treatment) {
+            return toast.error("Faltando tratamento")
+        }
+        if (!approve) {
+            return toast.error("Erro ao enviar aprovação, sem resposta de aprovação")
+        }
+
         try {
             const user = Cookies.get("j.ai.user")
             const data = {
@@ -54,6 +74,7 @@ export function ApproveOrderForm({ className, approve, orderId }: ApproveOrderFo
                 observation: observation,
                 approve
             }
+            console.log(data)
             const response = await api.post("/justification/manager/action", data)
             console.log(response)
             toast.info("Aprovação enviada com sucesso")
