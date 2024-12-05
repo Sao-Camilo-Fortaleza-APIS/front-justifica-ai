@@ -64,7 +64,7 @@ export default function TimeJustificationForm() {
         }
     }
 
-    const handleRadioChange = (value: string) => {
+    const handleSelectedReason = (value: string) => {
         setFormData(prev => ({
             ...prev,
             reason: ReasonOptions[value as keyof typeof ReasonOptions],
@@ -122,7 +122,7 @@ export default function TimeJustificationForm() {
     }, [employeeData, navigate])
 
     return (
-        <div className="p-6 max-w-4xl mx-auto space-y-4 bg-background rounded-lg shadow-md">
+        <div className="p-6 max-w-4xl self-center space-y-4 mx-2 bg-background rounded-lg shadow-lg shadow-zinc-300">
             <h1 className="text-2xl font-bold mb-6">Justificativa de Ponto</h1>
             {/* CARD */}
             <div className="flex items-center justify-center">
@@ -154,8 +154,8 @@ export default function TimeJustificationForm() {
             <form onSubmit={handleSubmit} className="space-y-4 w-full mt-4">
                 <div className="w-full flex flex-col items-start sm:flex-row gap-5">
                     {/* SECTOR */}
-                    <div className="w-1/2 flex flex-col space-y-4">
-                        <Label htmlFor="sector">Setor</Label>
+                    <Label htmlFor="sector" className="w-full sm:w-1/2 flex flex-col gap-2">
+                        Setor
                         {/* <select
                             value={formData.id_sector}
                             onChange={(e) => handleSectorSelectedChange(e.target.value)}
@@ -174,14 +174,14 @@ export default function TimeJustificationForm() {
                         </select> */}
                         <SelectSector
                             sectors={sectorsData}
+                            id="sector"
+                            className="text-muted-foreground hover:text-secondary-foreground font-normal"
                             onSelectSector={(sector) => setSelectedSector(sector)}
                         />
-                    </div>
+                    </Label>
 
                     {/* REASON */}
-                    <div className="w-1/2 flex flex-col space-y-4">
-                        <Label htmlFor="time">Motivo</Label>
-                        {/* <RadioGroup
+                    {/* <RadioGroup
                         onValueChange={handleRadioChange}
                         required
                         className="flex space-x-4"
@@ -202,9 +202,12 @@ export default function TimeJustificationForm() {
                             <RadioGroupItem value="outros" id="outros" />
                             <Label htmlFor="outros">Outros</Label>
                         </div>
-                        </RadioGroup> */}
-                        <Select onValueChange={handleRadioChange} required>
-                            <SelectTrigger className="w-full flex space-x-4 bg-zinc-50 hover:bg-zinc-100">
+                    </RadioGroup> */}
+
+                    <Label htmlFor="reason" className="w-full sm:w-1/2 flex flex-col gap-2">
+                        Motivo
+                        <Select onValueChange={handleSelectedReason} required>
+                            <SelectTrigger name="reason" id="reason" className="w-full flex space-x-4 bg-zinc-50 hover:bg-zinc-100 text-muted-foreground font-normal">
                                 <SelectValue placeholder="Selecione um motivo" />
                             </SelectTrigger>
                             <SelectContent>
@@ -213,36 +216,39 @@ export default function TimeJustificationForm() {
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
+                    </Label>
                 </div>
 
                 <div className="flex flex-col items-start sm:flex-row gap-5">
                     {/* DATE */}
-                    <div className="w-1/2 flex flex-col space-y-4">
-                        <Label htmlFor="date">Data da ocorrência</Label>
+                    <Label htmlFor="date" className="w-full sm:w-1/2 flex flex-col gap-2">
+                        Data da ocorrência
                         <DateTimePicker
                             onDateChange={handleDateChange}
                             onTimeChange={handleTimeChange}
                             className="w-full"
+                            id="date"
                         />
-                    </div>
+                    </Label>
+
                     {/* PHONE */}
-                    <div className="w-1/2 flex flex-col space-y-4">
-                        <Label htmlFor="phone">Contato/Ramal</Label>
+                    <Label htmlFor="phone" className="w-full sm:w-1/2 flex flex-col gap-2">
+                        Contato/Ramal
                         <Input
                             name="phone"
                             type="number"
                             value={formData.phone}
                             min={0}
                             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                            className="w-full sm:w-full bg-zinc-50 hover:bg-zinc-100"
+                            className="w-full sm:w-full bg-zinc-50 hover:bg-zinc-100 font-normal"
+                            placeholder="Digite o ramal para contato"
                             required
                         />
-                    </div>
+                    </Label>
                 </div>
 
                 {/* COMPLEMENT */}
-                <div className="space-y-4">
+                <div className="w-full space-y-2">
                     <Label htmlFor="complement">Complemento</Label>
                     <Textarea
                         id="complement"

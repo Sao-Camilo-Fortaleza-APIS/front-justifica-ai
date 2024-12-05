@@ -20,7 +20,7 @@ import { ptBR } from "date-fns/locale"
 import { HTMLAttributes, useState } from "react"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp"
 
-interface DatePickerProps extends HTMLAttributes<HTMLDivElement> {
+interface DatePickerProps extends HTMLAttributes<HTMLButtonElement> {
   onDateChange: (date: Date | undefined) => void
   onTimeChange: (time: string | undefined) => void
 }
