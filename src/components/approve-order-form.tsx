@@ -24,7 +24,7 @@ type OrderApprovalData = z.infer<typeof orderApprovalSchema>
 type ApproveOrderFormProps = ComponentProps<"form"> & { approve: boolean, orderId: number }
 
 enum TreatmentOptions {
-    Banco = "Utilizar banco de horas",
+    banco = "Utilizar banco de horas",
     abonar = "Abonar",
     descontar = "Descontar em folha"
 }
