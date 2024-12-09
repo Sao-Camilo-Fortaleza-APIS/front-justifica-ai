@@ -51,7 +51,9 @@ export default function TimeJustificationForm() {
         enabled: true,
         placeholderData: keepPreviousData,
     })
-
+    const handleSectorSelectedChange = (value: string) => {
+        setFormData(prev => ({ ...prev, id_sector: value }))
+    }
     const handleDateChange = (selectedDate: Date | undefined) => {
         if (selectedDate) {
             setFormData(prev => ({ ...prev, date_occurrence: format(selectedDate, "dd/MM/yyyy", { locale: ptBR }) }))
@@ -79,7 +81,11 @@ export default function TimeJustificationForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-        if (selectedSector) { setFormData(prev => ({ ...prev, id_sector: selectedSector?.nr_sequencia.toString() })) }
+        //if (selectedSector) { setFormData(prev => ({ ...prev, id_sector: selectedSector?.nr_sequencia.toString() })) }
+        if (!formData.id_sector) {
+            setIsLoading(false)
+            return toast.error("Setor não informado corretamente")
+        }
         if (!formData.hour) {
             setIsLoading(false)
             return toast.error("Selecione o horário")
@@ -176,7 +182,7 @@ export default function TimeJustificationForm() {
                             sectors={sectorsData}
                             id="sector"
                             className="text-muted-foreground hover:text-secondary-foreground font-normal"
-                            onSelectSector={(sector) => setSelectedSector(sector)}
+                            onSelectSector={(sector) => handleSectorSelectedChange(sector.nr_sequencia.toString())}
                         />
                     </Label>
 
