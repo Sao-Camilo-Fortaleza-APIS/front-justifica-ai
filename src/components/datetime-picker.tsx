@@ -81,10 +81,17 @@ export function DateTimePicker({ onDateChange, onTimeChange, className }: DatePi
         mode="single"
         selected={date}
         onSelect={handleDateSelect}
-        initialFocus
-        disabled={(date) =>
-          date > new Date() || date < new Date("2024-01-01")
-        }
+        disabled={(date) => {
+          const today = new Date("2024-12-27")
+          const currentYear = today.getFullYear();
+          const currentMonth = today.getMonth();
+          // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
+          const cutoffDate = today.getDate() < 25
+            ? new Date(currentYear, currentMonth - 1, 25)
+            : new Date(currentYear, currentMonth, 25);
+
+          return date < cutoffDate; // Desabilita datas antes da data de corte
+        }}
       />
     </>
   )
