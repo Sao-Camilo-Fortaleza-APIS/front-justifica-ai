@@ -1,5 +1,5 @@
 import { Employee } from "@/api/get-employee-by-cpf"
-import { getSectors, Sector } from "@/api/gete-sectors"
+import { getSectors } from "@/api/gete-sectors"
 import { Justification, sendJustification } from "@/api/send-justification"
 import { DateTimePicker } from "@/components/datetime-picker"
 import { SelectSector } from "@/components/select-sector"
@@ -30,7 +30,7 @@ export default function TimeJustificationForm() {
     const { state } = useLocation()
     const [isLoading, setIsLoading] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
+    const [allowFutureDates, setAllowFutureDates] = useState<boolean>(false)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
         id_tasy: "",
@@ -71,6 +71,7 @@ export default function TimeJustificationForm() {
             ...prev,
             reason: ReasonOptions[value as keyof typeof ReasonOptions],
         }))
+        setAllowFutureDates(value === "folgaprogramada")
     }
 
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -232,6 +233,7 @@ export default function TimeJustificationForm() {
                         <DateTimePicker
                             onDateChange={handleDateChange}
                             onTimeChange={handleTimeChange}
+                            allowFutureDates={allowFutureDates}
                             className="w-full"
                             id="date"
                         />
