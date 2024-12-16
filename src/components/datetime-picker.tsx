@@ -23,9 +23,10 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp"
 interface DatePickerProps extends HTMLAttributes<HTMLButtonElement> {
   onDateChange: (date: Date | undefined) => void
   onTimeChange: (time: string | undefined) => void
+  allowFutureDates: boolean
 }
 
-export function DateTimePicker({ onDateChange, onTimeChange, className }: DatePickerProps) {
+export function DateTimePicker({ onDateChange, onTimeChange, className, allowFutureDates = false }: DatePickerProps) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [date, setDate] = useState<Date>()
@@ -82,7 +83,7 @@ export function DateTimePicker({ onDateChange, onTimeChange, className }: DatePi
         selected={date}
         onSelect={handleDateSelect}
         disabled={(date) => {
-          const today = new Date("2024-12-27")
+          const today = new Date()
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
@@ -90,7 +91,15 @@ export function DateTimePicker({ onDateChange, onTimeChange, className }: DatePi
             ? new Date(currentYear, currentMonth - 1, 25)
             : new Date(currentYear, currentMonth, 25);
 
-          return date < cutoffDate; // Desabilita datas antes da data de corte
+          /* if (!allowFutureDates) {
+            return date > today || date < cutoffDate;
+          } */
+
+          /**
+           * date < cutOffDate: desabilita datas antes do dia 25 do mês
+           * date > today: desabilita datas futuras
+           */
+          return date < cutoffDate || date > today
         }}
       />
     </>
