@@ -41,12 +41,12 @@ export function CollaboratorForm() {
             {/* Campo CPF para Colaborador */}
             <div className="mb-4">
                 <Label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cpf">
-                    CPF
+                    CPF <span className="text-sm text-muted-foreground font-normal">(Sem pontos)</span>
                 </Label>
                 <Input
-                    type="text"
+                    type="number"
                     id="cpf"
-                    placeholder="Digite seu CPF"
+                    placeholder="Digite seu CPF sem pontos"
                     autoComplete="off"
                     className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     {...registerColaborador('cpf')}

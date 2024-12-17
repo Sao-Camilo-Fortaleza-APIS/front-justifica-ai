@@ -87,10 +87,9 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, allowFut
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
-          const cutoffDate = today.getDate() < 25
-            ? new Date(currentYear, currentMonth - 1, 25)
-            : new Date(currentYear, currentMonth, 25);
-
+          const cutoffDate = today.getDate() < 26
+            ? new Date(currentYear, currentMonth - 1, 26)
+            : new Date(currentYear, currentMonth, 26);
           /* if (!allowFutureDates) {
             return date > today || date < cutoffDate;
           } */
