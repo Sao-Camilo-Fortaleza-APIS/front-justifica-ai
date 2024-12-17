@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Para navegadores baseados no Webkit (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Para Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Remover aparência padrão em todos os navegadores */
+input[type="number"] {
+  appearance: textfield;
+}
+
 @layer base {
   :root {
     --background: 0 0% 98%;
