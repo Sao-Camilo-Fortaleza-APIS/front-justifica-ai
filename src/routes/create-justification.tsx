@@ -30,7 +30,7 @@ export default function TimeJustificationForm() {
     const { state } = useLocation()
     const [isLoading, setIsLoading] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [allowFutureDates, setAllowFutureDates] = useState<boolean>(false)
+    const [isScheduleBreak, setIsScheduleBreak] = useState<boolean>(false)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
         id_tasy: "",
@@ -71,7 +71,7 @@ export default function TimeJustificationForm() {
             ...prev,
             reason: ReasonOptions[value as keyof typeof ReasonOptions],
         }))
-        setAllowFutureDates(value === "folgaprogramada")
+        setIsScheduleBreak(value === "folgaprogramada")
     }
 
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -233,7 +233,7 @@ export default function TimeJustificationForm() {
                         <DateTimePicker
                             onDateChange={handleDateChange}
                             onTimeChange={handleTimeChange}
-                            allowFutureDates={allowFutureDates}
+                            isScheduleBreak={isScheduleBreak}
                             className="w-full"
                             id="date"
                         />
