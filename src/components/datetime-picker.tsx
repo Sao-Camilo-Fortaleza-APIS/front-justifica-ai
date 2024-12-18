@@ -17,16 +17,16 @@ import { CalendarIcon } from "@radix-ui/react-icons"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { HTMLAttributes, useState } from "react"
+import { HTMLAttributes, useEffect, useState } from "react"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp"
 
 interface DatePickerProps extends HTMLAttributes<HTMLButtonElement> {
   onDateChange: (date: Date | undefined) => void
   onTimeChange: (time: string | undefined) => void
-  allowFutureDates: boolean
+  isScheduleBreak: boolean
 }
 
-export function DateTimePicker({ onDateChange, onTimeChange, className, allowFutureDates = false }: DatePickerProps) {
+export function DateTimePicker({ onDateChange, onTimeChange, className, isScheduleBreak }: DatePickerProps) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [date, setDate] = useState<Date>()
@@ -40,6 +40,14 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, allowFut
     setTime(selectedTime)
     onTimeChange(selectedTime)
   }
+
+  useEffect(() => {
+    // Se muda o estado de isScheduleBreak, reseta a data e hora
+    if (!isScheduleBreak) {
+      setDate(undefined)
+      setTime(undefined)
+    }
+  }, [isScheduleBreak])
 
   const trigger = (
     <Button variant={'outline'} className={cn(
@@ -83,22 +91,26 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, allowFut
         selected={date}
         onSelect={handleDateSelect}
         disabled={(date) => {
-          const today = new Date()
+          const today = new Date("12-17-2024");
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
-          const cutoffDate = today.getDate() < 26
+          const minDate = today.getDate() < 26
             ? new Date(currentYear, currentMonth - 1, 26)
-            : new Date(currentYear, currentMonth, 26);
-          /* if (!allowFutureDates) {
-            return date > today || date < cutoffDate;
-          } */
+            : new Date(currentYear, currentMonth, 26)
 
+          const maxDate = today < new Date(currentYear, currentMonth, 26)
+            ? new Date(currentYear, currentMonth, 25)
+            : new Date(currentYear, currentMonth + 1, 25)
+
+          if (isScheduleBreak) {
+            return date < minDate || date > new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 25)
+          }
           /**
-           * date < cutOffDate: desabilita datas antes do dia 25 do mês
+           * date < minDate: desabilita datas antes do dia 25 do mês
            * date > today: desabilita datas futuras
            */
-          return date < cutoffDate || date > today
+          return date < minDate || date > maxDate
         }}
       />
     </>
