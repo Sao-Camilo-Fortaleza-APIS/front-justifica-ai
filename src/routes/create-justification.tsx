@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { IdCard, Mail } from "lucide-react"
+import { IdCard, Loader, Mail, SendHorizonal, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -130,19 +130,24 @@ export default function TimeJustificationForm() {
 
     return (
         <>
-            <header className="flex justify-between items-center sm:px-6 p-1 shadow bg-white">
+            <header className="flex justify-between items-center sm:px-6 p-1 shadow-sm bg-white">
                 <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
                     <span className="flex items-center gap-2">
                         <img className="size-12" src="/logo_sc_vazada.png" alt="Logo São Camilo" />
                         <h1 className="text-xl font-bold text-zinc-800">Justifica AI</h1>
                     </span>
 
-                    <span className="text-sm font-medium text-muted-foreground antialiased hidden sm:block">
-                        {employeeData?.name.split(" ")[0]} {employeeData?.name.split(" ")[1]}
-                    </span>
+                    <Button
+                        variant="outline"
+                        className="flex items-center justify-center text-sm font-medium text-muted-foreground antialiased"
+                        onClick={() => navigate("/")}
+                    >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancelar
+                    </Button>
                 </div>
             </header>
-            <div className="p-6 mt-6 max-w-4xl self-center space-y-4 mx-2 bg-background rounded-lg border-none ring-1 ring-muted shadow-lg shadow-zinc-300">
+            <main className="p-6 mt-6 max-w-4xl self-center space-y-4 mx-2 bg-background rounded-lg border-none ring-1 ring-muted drop-shadow-md">
                 <h1 className="text-2xl font-bold mb-6 antialiased text-slate-900">Adicionar Justificativa de Ponto</h1>
                 {/* CARD */}
                 <div className="flex items-center justify-center">
@@ -179,7 +184,7 @@ export default function TimeJustificationForm() {
                             <SelectSector
                                 sectors={sectorsData}
                                 id="sector"
-                                className="text-muted-foreground hover:text-secondary-foreground font-normal"
+                                className="bg-zinc-50 hover:bg-zinc-100 text-muted-foreground hover:text-secondary-foreground font-normal"
                                 onSelectSector={(sector) => handleSectorSelectedChange(sector.nr_sequencia.toString())}
                             />
                         </Label>
@@ -208,7 +213,7 @@ export default function TimeJustificationForm() {
                                 onDateChange={handleDateChange}
                                 onTimeChange={handleTimeChange}
                                 isScheduleBreak={isScheduleBreak}
-                                className="w-full"
+                                className="w-full bg-zinc-50 hover:bg-zinc-100"
                                 id="date"
                             />
                         </Label>
@@ -247,7 +252,7 @@ export default function TimeJustificationForm() {
                         <Checkbox id="terms" checked={formData.is_aware} onCheckedChange={(e) => setFormData(prev => ({ ...prev, is_aware: e as boolean }))} required />
                         <label
                             htmlFor="terms"
-                            className="text-sm text-gray-600 whitespace-break-spaces"
+                            className="text-sm text-gray-600 whitespace-break-spaces hover:cursor-pointer"
                         >
                             Estou ciente que esta justificativa será analisada, podendo ser justificada e abonada,
                             ou justificada e não abonada, conforme previsto na legislação vigente. ART. 482 CLT Alinea "E".
@@ -256,15 +261,31 @@ export default function TimeJustificationForm() {
 
                     <div className="flex flex-col w-full sm:flex-row items-center justify-between gap-4 pb-10 sm:pb-0">
                         <Button type="submit" disabled={isLoading} className="w-full py-6 sm:w-fit sm:py-0">
-                            {isLoading ? "Enviando..." : "Enviar Justificativa"}
+                            {isLoading ?
+                                (<span className="flex items-center">
+                                    <Loader className="h-4 w-4 mr-2 animate-spin" />
+                                    Enviando
+                                </span>) :
+                                (<span className="flex items-center">
+                                    <SendHorizonal className="h-4 w-4 mr-2" />
+                                    Enviar justificativa
+                                </span>
+                                )
+                            }
                         </Button>
                         <Button type="button" variant="destructive" disabled={isLoading} className="w-full py-6 sm:w-fit sm:py-0" onClick={() => navigate("/")}>
+                            <X className="h-4 w-4 mr-2" />
                             Cancelar
                         </Button>
 
                     </div>
                 </form>
-            </div >
+            </main>
+            <footer className="flex justify-center items-center p-4 bg-white border border-opacity-50 mt-10">
+                <span className="text-muted-foreground bg-white text-sm font-normal antialiased">
+                    2024 - São Camilo Fortaleza. Tecnologia da Informação e Comunicação.
+                </span>
+            </footer>
         </>
     )
 }
