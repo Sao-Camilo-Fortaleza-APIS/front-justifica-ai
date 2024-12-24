@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilizando a barra de rolagem */
+::-webkit-scrollbar {
+  width: 10px;
+  /* Largura da barra de rolagem */
+  height: 10px;
+  /* Altura da barra de rolagem horizontal */
+}
+
+/* Fundo da barra de rolagem */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* Cor do fundo */
+  border-radius: 10px;
+  /* Bordas arredondadas */
+}
+
+/* Cor do thumb (parte que desliza) */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  /* Cor do thumb */
+  border-radius: 10px;
+  /* Bordas arredondadas */
+}
+
+/* Cor do thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* Para navegadores baseados no Webkit (Chrome, Safari, Edge) */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
