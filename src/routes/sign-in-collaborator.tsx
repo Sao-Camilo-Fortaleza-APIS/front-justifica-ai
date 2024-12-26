@@ -1,7 +1,7 @@
 import illustration from '@/assets/illustration.svg'
 import { CollaboratorForm } from '@/components/collaborator-form'
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export function SignInCollaborator() {
     const navigate = useNavigate()
@@ -13,6 +13,14 @@ export function SignInCollaborator() {
             </div>
 
             <div className="w-3/5 flex flex-col justify-center items-center p-8">
+                <Link
+                    target="_blank"
+                    to="http://chamadotasy.sccuradars.local/historico"
+                    className="absolute right-4 top-3 flex items-center text-sm antialiased underline gap-2 text-muted-foreground hover:text-secondary-foreground transition-colors duration-200"
+                >
+                    Acompanhar justificativas
+                </Link>
+
                 <h1 className="text-3xl font-bold mb-6">Justifica Aí</h1>
 
                 <CollaboratorForm />

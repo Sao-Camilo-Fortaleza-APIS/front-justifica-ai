@@ -6,6 +6,7 @@ import { SelectSector } from "@/components/select-sector"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerTrigger } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -13,9 +14,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { IdCard, Loader, Mail, SendHorizonal, X } from "lucide-react"
+import { IdCard, Loader, Mail, Menu, SendHorizonal, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 enum ReasonOptions {
@@ -29,6 +30,7 @@ export default function TimeJustificationForm() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [isLoading, setIsLoading] = useState(false)
+    const [openDrawer, setOpenDrawer] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isScheduleBreak, setIsScheduleBreak] = useState<boolean>(false)
     const [formData, setFormData] = useState<Justification>({
@@ -130,21 +132,46 @@ export default function TimeJustificationForm() {
 
     return (
         <>
-            <header className="flex justify-between items-center sm:px-6 p-1 shadow-sm bg-white">
+            <header className="flex justify-between items-center sm:px-6 p-1 shadow-sm bg-white z-10">
                 <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
                     <span className="flex items-center gap-2">
                         <img className="size-12" src="/logo_sc_vazada.png" alt="Logo São Camilo" />
                         <h1 className="text-xl font-bold text-zinc-800">Justifica AI</h1>
                     </span>
 
-                    <Button
-                        variant="outline"
-                        className="flex items-center justify-center text-sm font-medium text-muted-foreground antialiased"
-                        onClick={() => navigate("/")}
-                    >
-                        <X className="h-4 w-4 mr-2" />
-                        Cancelar
-                    </Button>
+
+                    <div className="mr-1 sm:mr-0">
+                        <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
+                            <DrawerTrigger asChild>
+                                <Button size="icon" variant="outline" className="sm:hidden flex items-center justify-center text-muted-foreground antialiased">
+                                    <Menu className="h-7 w-7 text-zinc-400" />
+                                </Button>
+                            </DrawerTrigger>
+                            <DrawerContent className="text-center">
+                                <Link
+                                    target="_blank"
+                                    to="http://chamadotasy.sccuradars.local/historico"
+                                    className="flex items-center justify-center text-lg gap-2 p-4 text-muted-foreground hover:text-secondary-foreground 
+                                    transition-colors duration-200 antialiased underline"
+                                >
+                                    Acompanhar suas justificativas
+                                </Link>
+                                <DrawerFooter className="pt-2">
+                                    <DrawerClose asChild>
+                                        <Button variant="outline">Fechar</Button>
+                                    </DrawerClose>
+                                </DrawerFooter>
+                            </DrawerContent>
+                        </Drawer>
+
+                        <Link
+                            target="_blank"
+                            to="http://chamadotasy.sccuradars.local/historico"
+                            className="hidden sm:flex items-center text-sm gap-2 text-muted-foreground hover:text-secondary-foreground transition-colors duration-200 antialiased underline"
+                        >
+                            Acompanhar justificativas
+                        </Link>
+                    </div>
                 </div>
             </header>
             <main className="p-6 mt-6 max-w-4xl self-center space-y-4 mx-2 bg-background rounded-lg border-none ring-1 ring-muted drop-shadow-md">
@@ -163,14 +190,14 @@ export default function TimeJustificationForm() {
                                     {employeeData?.cpf.slice(6, 9)}-
                                     {employeeData?.cpf.slice(9, 11)}
                                 </span>
-                                <div className="flex items-center">
+                                <span className="flex items-center">
                                     <Mail className="mr-2 h-4 w-4" />
                                     <span>{employeeData?.email}</span>
-                                </div>
-                                <div className="flex items-center">
+                                </span>
+                                <span className="flex items-center">
                                     <IdCard className="mr-2 h-4 w-4" />
                                     <span>{employeeData?.mat}</span>
-                                </div>
+                                </span>
                             </CardDescription>
                         </CardContent>
                     </Card>
