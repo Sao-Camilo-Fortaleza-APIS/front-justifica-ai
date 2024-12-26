@@ -19,6 +19,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
+import { ConfirmationDialog } from "@/components/confirmation-dialog"
 import Logo from "../assets/logo.png"
 
 enum ReasonOptions {
@@ -33,6 +34,7 @@ export default function TimeJustificationForm() {
     const queryClient = useQueryClient()
     const [isLoading, setIsLoading] = useState(false)
     const [openDrawer, setOpenDrawer] = useState(false)
+    const [openDialog, setOpenDialog] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isScheduleBreak, setIsScheduleBreak] = useState<boolean>(false)
     const [formData, setFormData] = useState<Justification>({
@@ -47,6 +49,7 @@ export default function TimeJustificationForm() {
         hour: "",
     })
     const employeeData = queryClient.getQueryData<Employee>(["employee"])
+    const [justificationId, setJustificationId] = useState<number | null>(null)
 
     const { data: sectorsData } = useQuery({
         queryKey: ['sectors'],
@@ -69,7 +72,6 @@ export default function TimeJustificationForm() {
             setFormData(prev => ({ ...prev, hour: timeFormatted }))
         }
     }
-
     const handleSelectedReason = (value: string) => {
         setFormData(prev => ({
             ...prev,
@@ -77,7 +79,6 @@ export default function TimeJustificationForm() {
         }))
         setIsScheduleBreak(value === "folgaprogramada")
     }
-
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, complement: e.target.value }))
     }
@@ -113,12 +114,11 @@ export default function TimeJustificationForm() {
             .then((response) => {
                 console.log(response.order)
                 setIsLoading(false)
-                toast.info("Jusitificativa enviada para a sua gestão", {
-                    description: `${response.order}`,
-                })
                 // Reset form
                 setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
-                return navigate("/", { replace: true })
+                setJustificationId(response.order)
+                setOpenDialog(true)
+                //return navigate("/", { replace: true })
             }).catch((error) => {
                 setIsLoading(false)
                 return toast.error(error.response.data.message)
@@ -200,11 +200,11 @@ export default function TimeJustificationForm() {
                                 </div>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <Send className="text-red-500 h-6 w-6" />
+                                <Send className="text-red-500 h-7 w-7" />
                                 <div>
                                     <h3 className="text-sm font-bold text-zinc-800">3. Envie para aprovação e acompanhe</h3>
                                     <p className="text-sm text-zinc-600">
-                                        Submeta sua justificativa para análise e <a href="http://chamadotasy.sccuradars.local/historico" className="text-zinc-600 hover:text-zinc-500 underline underline-offset-1" target="_blank" rel="noopener noreferrer">acompanhe pelo link</a>
+                                        Submeta sua justificativa para análise e acompanhe pelo <a href="http://chamadotasy.sccuradars.local/historico" className="text-zinc-600 hover:text-zinc-500 underline underline-offset-1" target="_blank" rel="noopener noreferrer">chamadotasy/historico</a>
                                     </p>
                                 </div>
                             </div>
@@ -270,7 +270,7 @@ export default function TimeJustificationForm() {
                     <div className="flex flex-col items-start sm:flex-row gap-5">
                         {/* DATE */}
                         <Label htmlFor="date" className="w-full sm:w-1/2 flex flex-col gap-2">
-                            Data da ocorrência
+                            Data e hora da ocorrência
                             <DateTimePicker
                                 onDateChange={handleDateChange}
                                 onTimeChange={handleTimeChange}
@@ -340,6 +340,13 @@ export default function TimeJustificationForm() {
                             Cancelar
                         </Button>
 
+                        {justificationId !== null && (
+                            <ConfirmationDialog
+                                justificationId={justificationId}
+                                open={openDialog}
+                                setOpen={setOpenDialog}
+                            />
+                        )}
                     </div>
                 </form>
             </main>
