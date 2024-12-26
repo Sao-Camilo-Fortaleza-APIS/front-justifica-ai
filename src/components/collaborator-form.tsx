@@ -1,5 +1,6 @@
 import { getEmployeeByCPF } from "@/api/get-employee-by-cpf"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { BaseSyntheticEvent } from "react"
 import { useForm } from "react-hook-form"
@@ -17,6 +18,7 @@ type ColaboradorFormData = z.infer<typeof colaboradorSchema>
 
 export function CollaboratorForm() {
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     const {
         register: registerColaborador,
@@ -29,7 +31,8 @@ export function CollaboratorForm() {
     const onSubmitColaborador = async (data: ColaboradorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
         await getEmployeeByCPF(data.cpf).then((response) => {
-            navigate('/create-justification', { state: { employee: response } })
+            queryClient.setQueryData(["employee"], response)
+            navigate('/create-justification')
         }).catch((error) => {
             console.error(error)
             toast.error('CPF não encontrado')

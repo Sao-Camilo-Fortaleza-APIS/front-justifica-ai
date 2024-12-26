@@ -1,5 +1,6 @@
 import { useAppContext } from "@/hooks/use-auth-context";
 import Cookies from "js-cookie";
+import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -33,13 +34,14 @@ export function Hero() {
         }
     }, [user, userLogged, navigate])
     return (
-        <div className="flex items-center justify-end gap-2">
-            <span className="text-xs hidden sm:block">{user && user}</span>
+        <div className="flex items-center justify-end">
+            <span className="text-sm hidden sm:block">{user && user}</span>
             <Button
                 onClick={() => handleSignOut()}
-                variant="link" size="sm"
-                className="leading-tight flex items-center justify-center gap-1 text-zinc-500"
+                variant="link"
+                className="leading-none text-right text-zinc-500"
             >
+                <LogOut className="h-6 w-6 mr-2" />
                 Sair
             </Button>
 

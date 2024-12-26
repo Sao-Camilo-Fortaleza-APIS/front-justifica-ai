@@ -26,7 +26,8 @@ type ApproveOrderFormProps = ComponentProps<"form"> & { approve: boolean, orderI
 enum TreatmentOptions {
     banco = "Utilizar banco de horas",
     abonar = "Abonar",
-    descontar = "Descontar em folha"
+    descontar = "Descontar em folha",
+    incluir = "Incluir batida de ponto"
 }
 
 export function ApproveOrderForm({ className, approve, orderId }: ApproveOrderFormProps) {
@@ -113,6 +114,10 @@ export function ApproveOrderForm({ className, approve, orderId }: ApproveOrderFo
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="banco" id="banco-horas" />
                         <Label htmlFor="banco-horas">Utilizar banco de horas</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="incluir" id="incluir-batida" />
+                        <Label htmlFor="incluir-batida">Incluir batida de ponto</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="descontar" id="descontar-folha" />
