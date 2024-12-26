@@ -14,10 +14,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { IdCard, Loader, Mail, Menu, SendHorizonal, X } from "lucide-react"
+import { Edit, IdCard, ListCheck, Loader, Mail, Menu, Send, SendHorizonal, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+
+import Logo from "../assets/logo.png"
 
 enum ReasonOptions {
     ausencia = "Ausência de batida",
@@ -136,9 +138,8 @@ export default function TimeJustificationForm() {
                 <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
                     <span className="flex items-center gap-2">
                         <img className="size-12" src="/logo_sc_vazada.png" alt="Logo São Camilo" />
-                        <h1 className="text-xl font-bold text-zinc-800">Justifica AI</h1>
+                        <h1 className="text-xl font-bold text-zinc-800">Justifica Aí</h1>
                     </span>
-
 
                     <div className="mr-1 sm:mr-0">
                         <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
@@ -175,35 +176,69 @@ export default function TimeJustificationForm() {
                 </div>
             </header>
             <main className="p-6 mt-6 max-w-4xl self-center space-y-4 mx-2 bg-background rounded-lg border-none ring-1 ring-muted drop-shadow-md">
-                <h1 className="text-2xl font-bold mb-6 antialiased text-slate-900">Adicionar Justificativa de Ponto</h1>
-                {/* CARD */}
-                <div className="flex items-center justify-center">
-                    <Card className="w-80 h-48 flex flex-col justify-between bg-gradient-to-bl from-zinc-600 to-red-500">
-                        <CardHeader>
-                            <CardTitle className="text-white antialiased">{employeeData?.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-white">
-                            <CardDescription className="text-white">
-                                <span className="text-lg text-left">
-                                    {employeeData?.cpf.slice(0, 3)}.
-                                    {employeeData?.cpf.slice(3, 6)}.
-                                    {employeeData?.cpf.slice(6, 9)}-
-                                    {employeeData?.cpf.slice(9, 11)}
-                                </span>
-                                <span className="flex items-center">
-                                    <Mail className="mr-2 h-4 w-4" />
-                                    <span>{employeeData?.email}</span>
-                                </span>
-                                <span className="flex items-center">
-                                    <IdCard className="mr-2 h-4 w-4" />
-                                    <span>{employeeData?.mat}</span>
-                                </span>
-                            </CardDescription>
-                        </CardContent>
-                    </Card>
+                <h1 className="text-3xl font-bold font-inter mb-8 antialiased text-zinc-800">Justificativa de Ponto</h1>
+                <div className="flex flex-col-reverse items-center gap-4 sm:flex-row">
+                    <section className="w-full">
+                        <div className="w-80 flex flex-col space-y-2">
+                            <h2 className="text-lg font-semibold text-zinc-800">Veja como funciona:</h2>
+                            <div className="flex items-start space-x-3">
+                                <ListCheck className=" text-red-500 h-6 w-6" />
+                                <div>
+                                    <h3 className="text-sm font-bold text-zinc-800">1. Confirme seus dados</h3>
+                                    <p className="text-sm text-zinc-600">
+                                        Veja se seus dados estão corretos.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start space-x-3">
+                                <Edit className="text-red-500 h-6 w-6" />
+                                <div>
+                                    <h3 className="text-sm font-bold text-zinc-800">2. Preencha a justificativa</h3>
+                                    <p className="text-sm text-zinc-600">
+                                        Explique o motivo da ausência ou divergência no ponto.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start space-x-3">
+                                <Send className="text-red-500 h-6 w-6" />
+                                <div>
+                                    <h3 className="text-sm font-bold text-zinc-800">3. Envie para aprovação e acompanhe</h3>
+                                    <p className="text-sm text-zinc-600">
+                                        Submeta sua justificativa para análise e <a href="http://chamadotasy.sccuradars.local/historico" className="text-zinc-600 hover:text-zinc-500 underline underline-offset-1" target="_blank" rel="noopener noreferrer">acompanhe pelo link</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section className="w-full">
+                        <Card className="w-80 h-48 relative flex flex-col justify-between drop-shadow-md -z-10">
+                            <img src={Logo} alt="Logo São Camilo" className="absolute right-0 w-24 h-24 self-center rounded-tr-xl z-0" />
+                            <CardHeader className="w-2/3">
+                                <CardTitle className="text-zinc-600 antialiased">{employeeData?.name}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-zinc-600">
+                                <CardDescription className="text-zinc-600">
+                                    <span className="text-lg text-left">
+                                        {employeeData?.cpf.slice(0, 3)}.
+                                        {employeeData?.cpf.slice(3, 6)}.
+                                        {employeeData?.cpf.slice(6, 9)}-
+                                        {employeeData?.cpf.slice(9, 11)}
+                                    </span>
+                                    <span className="flex items-center">
+                                        <Mail className="mr-2 h-4 w-4" />
+                                        <span>{employeeData?.email}</span>
+                                    </span>
+                                    <span className="flex items-center">
+                                        <IdCard className="mr-2 h-4 w-4" />
+                                        <span>{employeeData?.mat}</span>
+                                    </span>
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
+                    </section>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 w-full mt-4">
+                <form onSubmit={handleSubmit} className="space-y-4 w-full pt-8">
                     <div className="w-full flex flex-col items-start sm:flex-row gap-5">
                         {/* SECTOR */}
                         <Label htmlFor="sector" className="w-full sm:w-1/2 flex flex-col gap-2">

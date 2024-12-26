@@ -18,7 +18,7 @@ export function SignInCollaborator() {
                     to="http://chamadotasy.sccuradars.local/historico"
                     className="absolute right-4 top-3 flex items-center text-sm antialiased underline gap-2 text-muted-foreground hover:text-secondary-foreground transition-colors duration-200"
                 >
-                    Acompanhar justificativas
+                    Acompanhar suas justificativas
                 </Link>
 
                 <h1 className="text-3xl font-bold mb-6">Justifica Aí</h1>
