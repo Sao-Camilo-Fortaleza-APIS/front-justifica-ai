@@ -47,7 +47,7 @@ export function ConfirmationDialog({ justificationId, open, setOpen }: Confirmat
                 <p className="text-center mt-2">Guarde esse número para acompanhar o status da sua justificativa.</p>
 
                 <div className="w-full flex flex-col space-y-2 mt-4">
-                  <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2 bg-emerald-500 hover:bg-emerald-600">
+                  <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2 bg-emerald-500 hover:bg-emerald-600" onClick={() => navigate("/")}>
                     <Home className="h-4 w-4 mr-2" />
                     Ir para o início
                   </Button>
