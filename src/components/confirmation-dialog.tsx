@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -15,8 +16,9 @@ import {
   DrawerHeader,
   DrawerTitle
 } from "@/components/ui/drawer"
-import { useCopyToClipboard, useMediaQuery } from "@uidotdev/usehooks"
-import { BadgeCheck, Check, Copy, Eye, PlusCircle } from "lucide-react"
+import { useMediaQuery } from "@uidotdev/usehooks"
+import { BadgeCheck, Eye, Home, PlusCircle } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 type ConfirmationDialogProps = {
   justificationId: number
@@ -26,48 +28,48 @@ type ConfirmationDialogProps = {
 
 export function ConfirmationDialog({ justificationId, open, setOpen }: ConfirmationDialogProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const [copiedText, copyToClipboard] = useCopyToClipboard()
-  const hasCopiedText = Boolean(copiedText)
+  const navigate = useNavigate()
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px]" aria-label="Justificativa enviada para sua gestão!">
           <DialogHeader>
             <DialogTitle className="text-zinc-700 font-inter font-semibold">Justificativa enviada para sua gestão!</DialogTitle>
             <DialogDescription asChild>
-              <div>
-                <div className="flex items-center justify-center"><BadgeCheck className="h-16 w-16 text-emerald-500 mt-4" /></div>
+              <div className="flex flex-col items-center w-full space-y-2">
+                <BadgeCheck className="h-16 w-16 text-emerald-500 mt-4" />
 
                 <p className="text-center mt-4">
-                  O número da sua justificativa é
-                  <Button
-                    disabled={hasCopiedText}
-                    className="font-bold text-base text-zinc-600 underline"
-                    variant="link"
-                    onClick={() => copyToClipboard(justificationId.toString())}
-                  >
-                    {justificationId}
-                    {hasCopiedText ? (<Check className="h-4 w-4" />) : (<Copy className="h-4 w-4 ml-2" />)}
-                  </Button>
+                  O número da sua justificativa é:
                 </p>
+                <p className="text-center font-bold text-xl text-zinc-600 ml-1">{justificationId}</p>
                 <p className="text-center mt-2">Guarde esse número para acompanhar o status da sua justificativa.</p>
 
-                <div className="flex flex-col space-y-2 mt-4">
-                  <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2">
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Nova justificativa
+                <div className="w-full flex flex-col space-y-2 mt-4">
+                  <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2 bg-emerald-500 hover:bg-emerald-600">
+                    <Home className="h-4 w-4 mr-2" />
+                    Ir para o início
                   </Button>
-                  <Button variant="outline" className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2 border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-400 transition-colors">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Acompanhar outras justificativas
+
+                  <DialogClose asChild>
+                    <Button className="rounded-md px-3 text-xs">
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Nova justificativa
+                    </Button>
+                  </DialogClose>
+
+                  <Button asChild className="rounded-md p-5 text-xs text-zinc-500 hover:text-zinc-600 sm:px-4 sm:py-2 border border-input shadow-sm bg-background hover:bg-zinc-100">
+                    <a href="http://chamadotasy.sccuradars.local/historico" target="_blank" rel="noreferrer">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Acompanhar outras justificativas
+                    </a>
                   </Button>
+
                 </div>
               </div>
             </DialogDescription>
           </DialogHeader>
-
-
         </DialogContent>
       </Dialog >
     )
@@ -77,26 +79,39 @@ export function ConfirmationDialog({ justificationId, open, setOpen }: Confirmat
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Adicionar nova justificativa</DrawerTitle>
-          <DrawerDescription>
-            <div className="flex flex-col space-y-2 mt-4">
-              <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Nova justificativa
-              </Button>
-              <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2">
-                <Eye className="h-4 w-4 mr-2" />
-                Acompanhar outras justificativas
-              </Button>
+          <DrawerTitle>Justificativa enviada para sua gestão!</DrawerTitle>
+          <DrawerDescription asChild>
+            <div className="flex flex-col items-center w-full space-y-2">
+              <BadgeCheck className="h-16 w-16 text-emerald-500 mt-4" />
+
+              <p className="text-center mt-4">
+                O número da sua justificativa é:
+              </p>
+              <p className="text-center font-bold text-xl text-zinc-600 ml-1">{justificationId}</p>
+              <p className="text-center mt-2">Guarde esse número para acompanhar o status da sua justificativa.</p>
             </div>
           </DrawerDescription>
         </DrawerHeader>
+        <DrawerFooter className="pt-2 mb-5">
+          <Button className="rounded-md p-5 text-sm sm:px-4 sm:py-2 bg-emerald-500 hover:bg-emerald-600" onClick={() => navigate("/")}>
+            <Home className="h-4 w-4 mr-2" />
+            Ir para o início
+          </Button>
 
-
-        <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-            <Button variant="outline">Cancelar</Button>
+            <Button className="rounded-md p-5 text-sm sm:px-4 sm:py-2">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Nova justificativa
+            </Button>
           </DrawerClose>
+
+          <Button asChild className="rounded-md p-5 text-sm sm:px-4 sm:py-2 border border-input shadow-sm hover:bg-accent-foreground hover:text-muted">
+            <a href="http://chamadotasy.sccuradars.local/historico" target="_blank" rel="noreferrer">
+              <Eye className="h-4 w-4 mr-2" />
+              Acompanhar outras justificativas
+            </a>
+          </Button>
+
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

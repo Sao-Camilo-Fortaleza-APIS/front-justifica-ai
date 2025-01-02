@@ -8,7 +8,13 @@ import { Toaster } from 'sonner'
 import { AuthContextProvider } from './contexts/auth-provider'
 import './global.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 600000, // 10 minutos - tempo de vida do cache (garbage collector)
+    }
+  }
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

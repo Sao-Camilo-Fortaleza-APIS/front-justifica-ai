@@ -33,9 +33,9 @@ export default function TimeJustificationForm() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [isLoading, setIsLoading] = useState(false)
-    const [openDrawer, setOpenDrawer] = useState(false)
-    const [openDialog, setOpenDialog] = useState(false)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [openDrawerMenu, setOpenDrawerMenu] = useState(false)
+    const [openDialogConfirmation, setOpenDialogConfirmation] = useState(false)
+    const [reset, setReset] = useState(false)
     const [isScheduleBreak, setIsScheduleBreak] = useState<boolean>(false)
     const [formData, setFormData] = useState<Justification>({
         complement: "",
@@ -55,7 +55,8 @@ export default function TimeJustificationForm() {
         queryKey: ['sectors'],
         queryFn: getSectors,
         refetchOnWindowFocus: false,
-        enabled: true,
+        refetchOnMount: false,
+        enabled: false,
         placeholderData: keepPreviousData,
     })
     const handleSectorSelectedChange = (value: string) => {
@@ -82,7 +83,6 @@ export default function TimeJustificationForm() {
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, complement: e.target.value }))
     }
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -115,9 +115,11 @@ export default function TimeJustificationForm() {
                 console.log(response.order)
                 setIsLoading(false)
                 // Reset form
-                setFormData({ complement: "", id_tasy: "", id_sector: "", phone: "", date_occurrence: "", reason: "", is_aware: false, mat: null, hour: "" })
+                setFormData(prev => ({ ...prev, complement: "", date_occurrence: "", reason: "", hour: "" }))
+                setReset(true)
+                handleSelectedReason("")
                 setJustificationId(response.order)
-                setOpenDialog(true)
+                setOpenDialogConfirmation(true)
                 //return navigate("/", { replace: true })
             }).catch((error) => {
                 setIsLoading(false)
@@ -126,10 +128,13 @@ export default function TimeJustificationForm() {
     }
 
     useEffect(() => {
-        if (!employeeData) return navigate('/')
+        if (!employeeData) {
+            toast.info("Sessão expirada, por favor, informe seu CPF novamente")
+            const timeout = setTimeout(() => navigate("/"), 3000)
+            return () => clearTimeout(timeout)
+        }
 
         setFormData(prev => ({ ...prev, mat: employeeData.mat, id_tasy: employeeData.id_tasy.toString() }))
-        // setFormData(prev => ({ ...prev, id_tasy: employeeData.id_tasy }))
     }, [employeeData, navigate])
 
     return (
@@ -142,7 +147,7 @@ export default function TimeJustificationForm() {
                     </span>
 
                     <div className="mr-1 sm:mr-0">
-                        <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
+                        <Drawer open={openDrawerMenu} onOpenChange={setOpenDrawerMenu}>
                             <DrawerTrigger asChild>
                                 <Button size="icon" variant="outline" className="sm:hidden flex items-center justify-center text-muted-foreground antialiased">
                                     <Menu className="h-7 w-7 text-zinc-400" />
@@ -254,8 +259,18 @@ export default function TimeJustificationForm() {
                         {/* REASON */}
                         <Label htmlFor="reason" className="w-full sm:w-1/2 flex flex-col gap-2">
                             Motivo
-                            <Select onValueChange={handleSelectedReason} required>
-                                <SelectTrigger name="reason" id="reason" className="w-full flex space-x-4 bg-zinc-50 hover:bg-zinc-100 text-muted-foreground font-normal">
+                            <Select
+                                onValueChange={handleSelectedReason}
+                                value={Object.keys(ReasonOptions).find(
+                                    (key) => ReasonOptions[key as keyof typeof ReasonOptions] === formData.reason
+                                ) || ""}
+                                required
+                            >
+                                <SelectTrigger
+                                    name="reason"
+                                    id="reason"
+                                    className="w-full flex space-x-4 bg-zinc-50 hover:bg-zinc-100 text-muted-foreground font-normal"
+                                >
                                     <SelectValue placeholder="Selecione um motivo" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -275,6 +290,7 @@ export default function TimeJustificationForm() {
                                 onDateChange={handleDateChange}
                                 onTimeChange={handleTimeChange}
                                 isScheduleBreak={isScheduleBreak}
+                                reset={reset}
                                 className="w-full bg-zinc-50 hover:bg-zinc-100"
                                 id="date"
                             />
@@ -343,8 +359,8 @@ export default function TimeJustificationForm() {
                         {justificationId !== null && (
                             <ConfirmationDialog
                                 justificationId={justificationId}
-                                open={openDialog}
-                                setOpen={setOpenDialog}
+                                open={openDialogConfirmation}
+                                setOpen={setOpenDialogConfirmation}
                             />
                         )}
                     </div>
