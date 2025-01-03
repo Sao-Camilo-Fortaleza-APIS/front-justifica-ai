@@ -24,9 +24,10 @@ interface DatePickerProps extends HTMLAttributes<HTMLButtonElement> {
   onDateChange: (date: Date | undefined) => void
   onTimeChange: (time: string | undefined) => void
   isScheduleBreak: boolean
+  reset?: boolean
 }
 
-export function DateTimePicker({ onDateChange, onTimeChange, className, isScheduleBreak }: DatePickerProps) {
+export function DateTimePicker({ onDateChange, onTimeChange, className, isScheduleBreak, reset = false }: DatePickerProps) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [date, setDate] = useState<Date>()
@@ -40,6 +41,13 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
     setTime(selectedTime)
     onTimeChange(selectedTime)
   }
+
+  useEffect(() => {
+    if (reset) {
+      setDate(undefined);
+      setTime(undefined);
+    }
+  }, [reset]);
 
   useEffect(() => {
     // Se muda o estado de isScheduleBreak, reseta a data e hora
@@ -91,7 +99,7 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
         selected={date}
         onSelect={handleDateSelect}
         disabled={(date) => {
-          const today = new Date("12-17-2024");
+          const today = new Date();
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
@@ -132,7 +140,7 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
         {content}
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline">Fechar</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
