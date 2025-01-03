@@ -99,7 +99,7 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
         selected={date}
         onSelect={handleDateSelect}
         disabled={(date) => {
-          const today = new Date("12-17-2024");
+          const today = new Date();
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
