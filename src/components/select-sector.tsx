@@ -25,8 +25,9 @@ import { HTMLAttributes, useEffect, useState } from "react"
 interface SelectSectorProps extends HTMLAttributes<HTMLDivElement> {
     sectors?: Sectors
     onSelectSector?: (sector: Sector) => void
+    reset?: boolean
 }
-export function SelectSector({ sectors, onSelectSector, className }: SelectSectorProps) {
+export function SelectSector({ sectors, onSelectSector, className, reset = false }: SelectSectorProps) {
     const [open, setOpen] = useState(false)
     const isDesktop = useMediaQuery("(min-width: 768px)")
     const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
@@ -37,6 +38,12 @@ export function SelectSector({ sectors, onSelectSector, className }: SelectSecto
             onSelectSector(sector!)
         }
     }
+
+    useEffect(() => {
+        if (reset) {
+            setSelectedSector(null)
+        }
+    }, [reset])
 
     if (isDesktop) {
         return (

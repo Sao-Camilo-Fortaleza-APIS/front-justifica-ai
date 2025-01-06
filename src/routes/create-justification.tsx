@@ -351,7 +351,12 @@ export default function TimeJustificationForm() {
                                 )
                             }
                         </Button>
-                        <Button type="button" variant="destructive" disabled={isLoading} className="w-full py-6 sm:w-fit sm:py-0" onClick={() => navigate("/")}>
+                        <Button
+                            type="button"
+                            disabled={isLoading}
+                            className="w-full py-6 sm:w-fit sm:py-0 border border-zinc-300 bg-white text-zinc-500 hover:bg-zinc-100"
+                            onClick={() => navigate("/")}
+                        >
                             <X className="h-4 w-4 mr-2" />
                             Cancelar
                         </Button>

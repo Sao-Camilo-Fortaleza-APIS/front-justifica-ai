@@ -47,13 +47,13 @@ export function ConfirmationDialog({ justificationId, open, setOpen }: Confirmat
                 <p className="text-center mt-2">Guarde esse número para acompanhar o status da sua justificativa.</p>
 
                 <div className="w-full flex flex-col space-y-2 mt-4">
-                  <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2 bg-emerald-500 hover:bg-emerald-600" onClick={() => navigate("/")}>
+                  <Button className="h-8 rounded-md px-3 text-xs sm:h-9 sm:px-4 sm:py-2" onClick={() => navigate("/")}>
                     <Home className="h-4 w-4 mr-2" />
                     Ir para o início
                   </Button>
 
                   <DialogClose asChild>
-                    <Button className="rounded-md px-3 text-xs">
+                    <Button className="rounded-md p-5 text-xs text-zinc-500 hover:text-zinc-600 sm:px-4 sm:py-2 border border-input shadow-sm bg-background hover:bg-zinc-100">
                       <PlusCircle className="h-4 w-4 mr-2" />
                       Nova justificativa
                     </Button>
@@ -93,19 +93,19 @@ export function ConfirmationDialog({ justificationId, open, setOpen }: Confirmat
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2 mb-5">
-          <Button className="rounded-md p-5 text-sm sm:px-4 sm:py-2 bg-emerald-500 hover:bg-emerald-600" onClick={() => navigate("/")}>
+          <Button className="rounded-md p-5 text-sm sm:px-4 sm:py-2" onClick={() => navigate("/")}>
             <Home className="h-4 w-4 mr-2" />
             Ir para o início
           </Button>
 
           <DrawerClose asChild>
-            <Button className="rounded-md p-5 text-sm sm:px-4 sm:py-2">
+            <Button className="rounded-md p-5 text-sm sm:px-4 sm:py-2 border border-input shadow-sm hover:bg-accent-foreground text-zinc-500 hover:text-zinc-600 bg-background hover:bg-zinc-100">
               <PlusCircle className="h-4 w-4 mr-2" />
               Nova justificativa
             </Button>
           </DrawerClose>
 
-          <Button asChild className="rounded-md p-5 text-sm sm:px-4 sm:py-2 border border-input shadow-sm hover:bg-accent-foreground hover:text-muted">
+          <Button asChild className="rounded-md p-5 text-sm sm:px-4 sm:py-2 border border-input shadow-sm hover:bg-accent-foreground text-zinc-500 hover:text-zinc-600 bg-background hover:bg-zinc-100">
             <a href="http://chamadotasy.sccuradars.local/historico" target="_blank" rel="noreferrer">
               <Eye className="h-4 w-4 mr-2" />
               Acompanhar outras justificativas
