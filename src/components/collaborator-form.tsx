@@ -55,14 +55,14 @@ export function CollaboratorForm() {
                     {...registerColaborador('cpf')}
                 />
                 {errorsCollaborator.cpf && (
-                    <p className="text-red-500 text-xs mt-1">{errorsCollaborator.cpf.message}</p>
+                    <p className="text-primary text-xs mt-1">{errorsCollaborator.cpf.message}</p>
                 )}
             </div>
 
             {/* Botão de login */}
             <Button
                 type="submit"
-                className="bg-blue-500 w-full h-12 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                className="bg-primary w-full h-12 hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
                 disabled={isSubmittingColaborador}
             >
                 {isSubmittingColaborador ? <Loader className='animate-spin' /> : 'Entrar'}
