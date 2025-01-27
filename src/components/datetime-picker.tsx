@@ -103,9 +103,10 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
-          const minDate = today.getDate() < 26
-            ? new Date(currentYear, currentMonth - 1, 26)
-            : new Date(currentYear, currentMonth, 26)
+          /*  const minDate = today.getDate() < 26
+             ? new Date(currentYear, currentMonth - 1, 26)
+             : new Date(currentYear, currentMonth, 26) */
+          const minDate = new Date("2024-12-26")
 
           const maxDate = today < new Date(currentYear, currentMonth, 26)
             ? new Date(currentYear, currentMonth, 25)
