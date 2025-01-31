@@ -4,6 +4,7 @@ import { SelectSector } from "@/components/select-sector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAppContext } from "@/hooks/use-auth-context";
 import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
@@ -26,11 +27,12 @@ export type Justificativa = {
 };
 export function Approve() {
     const navigate = useNavigate()
+    const { isAuthenticated } = useAppContext()
     const user = Cookies.get("j.ai.user")
     const [collaboratorFilter, setCollaboratorFilter] = useState<string>("")
     const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
 
-    const { data: ordersResponse, isLoading, isFetching } = useQuery<Justificativa[]>({
+    const { data: ordersResponse, isFetching } = useQuery<Justificativa[]>({
         queryKey: ["justification-pendents"],
         queryFn: async () => {
             if (!user) {
@@ -59,7 +61,7 @@ export function Approve() {
             <Header />
             <div className="px-1 py-3 sm:p-6 max-w-4xl mx-2 sm:mx-auto sm:w-full space-y-4">
                 <h2 className="text-lg sm:text-3xl font-bold antialiased font-inter text-zinc-900">Pendentes de aprovação</h2>
-
+                {isAuthenticated && <p className="text-sm sm:text-base text-zinc-500">Olá, {user}</p>}
                 <div className="flex flex-col items-start gap-5 justify-between sm:flex-row sm:items-center">
                     <form className="w-full flex flex-col sm:flex-row sm:items-center gap-2">
                         <div
