@@ -15,7 +15,7 @@ import {
     DrawerHeader,
     DrawerTrigger
 } from "@/components/ui/drawer"
-import { Justificativa } from "@/routes/manager"
+import { Justificativa } from "@/routes/list-orders"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import { useState } from "react"
 import { DisapproveOrderForm } from "./disapprove-order-form"

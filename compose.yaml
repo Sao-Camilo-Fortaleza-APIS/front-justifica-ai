@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5179:5179"
+    env_file:
+      - .env.local
+    restart: always

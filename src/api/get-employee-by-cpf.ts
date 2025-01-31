@@ -4,6 +4,7 @@ export interface Employee {
     email: string
     mat: number
     id_tasy: number
+    cpf: string
 }
 export async function getEmployeeByCPF(cpf: string) {
     const response = await api.get<Employee>(`/applicant/information/${cpf}`)

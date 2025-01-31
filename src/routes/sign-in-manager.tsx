@@ -1,16 +1,16 @@
-import illustration from '@/assets/illustration.svg'
-import { CollaboratorForm } from '@/components/collaborator-form'
+import illustration from '@/assets/bg3.jpg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAppContext } from '@/hooks/use-auth-context'
 import api from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
 import Cookies from 'js-cookie'
 import { Loader } from 'lucide-react'
-import { BaseSyntheticEvent, useEffect, useState } from 'react'
+import { BaseSyntheticEvent, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -20,9 +20,9 @@ const gestorSchema = z.object({
 })
 type GestorFormData = z.infer<typeof gestorSchema>
 
-export function SignIn() {
+export function SignInManager() {
+    const { login } = useAppContext()
     const navigate = useNavigate()
-    const [isGestor, setIsGestor] = useState(false)
 
     // useForm para Gestor
     const {
@@ -39,6 +39,7 @@ export function SignIn() {
             const response = await api.post("/login", data)
             Cookies.set("j.ai.token", response.data.token)
             Cookies.set("j.ai.user", response.data.user)
+            login(response.data)
             navigate("/manager", { state: { user: response.data.user } })
 
         } catch (error) {
@@ -60,21 +61,27 @@ export function SignIn() {
     return (
         <div className="flex h-screen">
             {/* Lado Esquerdo - Imagem */}
-            <div className="flex justify-center w-2/5 bg-blue-500">
+            <div className="flex justify-start w-3/6 h-full bg-primary">
                 <img
                     src={illustration}
-                    alt="Imagem lado esquerdo"
-                    className="object-cover"
+                    alt="Banner Justifica Aí"
+                    className="object-fill w-full border border-input"
                 />
             </div>
 
             {/* Lado Direito - Formulário */}
-            <div className="w-3/5 flex flex-col justify-center items-center p-8">
-                <h1 className="text-3xl font-bold mb-6">Justifica Aí</h1>
+            <div className="w-3/6 flex flex-col justify-center items-center p-8 bg-primary">
 
-                {!isGestor ? (
-                    <CollaboratorForm />
-                ) : (
+                <Link
+                    target="_blank"
+                    to="http://chamadotasy.sccuradars.local/historico"
+                    className="absolute right-4 top-3 flex items-center text-sm antialiased underline gap-2 text-zinc-100 hover:text-zinc-200 transition-colors duration-200"
+                >
+                    Acompanhar suas justificativas
+                </Link>
+
+                <div className='flex flex-col items-center bg-white shadow p-8 rounded-md w-full max-w-sm'>
+                    <h1 className="text-2xl font-bold font-inter antialiased mb-6 text-zinc-900">Área exclusiva para gestão</h1>
                     <form onSubmit={handleSubmitGestor(onSubmitGestor)} className="w-full max-w-sm">
                         {/* Campo Usuário para Gestor */}
                         <div className="mb-4">
@@ -116,27 +123,27 @@ export function SignIn() {
                         {/* Botão de login */}
                         <Button
                             type="submit"
-                            className="bg-blue-500 w-full h-12 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                            className="bg-primary w-full h-12 hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
                             disabled={isSubmittingGestor}
                         >
                             {isSubmittingGestor ? <Loader className='animate-spin' /> : 'Entrar'}
                         </Button>
                     </form>
-                )}
 
-                {/* Separador e opção de login para gestor */}
-                <div className="mt-6 flex items-center w-full max-w-sm">
-                    <hr className="border-gray-300 flex-grow" />
-                    <span className="mx-2 text-gray-500">ou</span>
-                    <hr className="border-gray-300 flex-grow" />
+                    {/* Separador e opção de login para gestor */}
+                    <div className="mt-6 flex items-center w-full max-w-sm">
+                        <hr className="border-gray-300 flex-grow" />
+                        <span className="mx-2 text-gray-500">ou</span>
+                        <hr className="border-gray-300 flex-grow" />
+                    </div>
+                    <Button
+                        variant="link"
+                        className="mt-4 text-primary hover:text-primary/90 font-semibold underline hover:no-underline"
+                        onClick={() => navigate('/')}
+                    >
+                        Acessar como Colaborador
+                    </Button>
                 </div>
-                <Button
-                    variant="link"
-                    className="mt-4 text-blue-500 hover:text-blue-700 font-semibold"
-                    onClick={() => setIsGestor(!isGestor)}
-                >
-                    {isGestor ? 'Entrar como Colaborador' : 'Entrar como Gestor'}
-                </Button>
             </div>
         </div>
     )

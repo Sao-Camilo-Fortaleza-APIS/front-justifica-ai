@@ -1,5 +1,6 @@
 import { getEmployeeByCPF } from "@/api/get-employee-by-cpf"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { BaseSyntheticEvent } from "react"
 import { useForm } from "react-hook-form"
@@ -17,24 +18,21 @@ type ColaboradorFormData = z.infer<typeof colaboradorSchema>
 
 export function CollaboratorForm() {
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     const {
         register: registerColaborador,
         handleSubmit: handleSubmitColaborador,
-        formState: { errors: errorsColaborador, isSubmitting: isSubmittingColaborador },
+        formState: { errors: errorsCollaborator, isSubmitting: isSubmittingColaborador },
     } = useForm<ColaboradorFormData>({
         resolver: zodResolver(colaboradorSchema),
     });
 
     const onSubmitColaborador = async (data: ColaboradorFormData, e?: BaseSyntheticEvent | undefined) => {
         e?.preventDefault()
-        console.log('Autenticando como colaborador...', data)
-        // Redirecionamento ou ação após login de colaborador
-
         await getEmployeeByCPF(data.cpf).then((response) => {
-            console.log(response)
-            toast.success(`${response.name} encontrado!`)
-            navigate('/create-justification', { state: { employee: response } })
+            queryClient.setQueryData(["employee"], response)
+            navigate('/create-justification')
         }).catch((error) => {
             console.error(error)
             toast.error('CPF não encontrado')
@@ -46,24 +44,25 @@ export function CollaboratorForm() {
             {/* Campo CPF para Colaborador */}
             <div className="mb-4">
                 <Label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cpf">
-                    CPF
+                    CPF <span className="text-sm text-muted-foreground font-normal">(Sem pontos)</span>
                 </Label>
                 <Input
-                    type="text"
+                    type="number"
                     id="cpf"
-                    placeholder="Digite seu CPF"
+                    placeholder="Digite seu CPF sem pontos"
+                    autoComplete="off"
                     className="shadow-sm appearance-none border rounded-md h-12 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     {...registerColaborador('cpf')}
                 />
-                {errorsColaborador.cpf && (
-                    <p className="text-red-500 text-xs mt-1">{errorsColaborador.cpf.message}</p>
+                {errorsCollaborator.cpf && (
+                    <p className="text-primary text-xs mt-1">{errorsCollaborator.cpf.message}</p>
                 )}
             </div>
 
             {/* Botão de login */}
             <Button
                 type="submit"
-                className="bg-blue-500 w-full h-12 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                className="bg-primary w-full h-12 hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
                 disabled={isSubmittingColaborador}
             >
                 {isSubmittingColaborador ? <Loader className='animate-spin' /> : 'Entrar'}

@@ -1,19 +1,42 @@
 import api from "@/lib/axios"
 import { cn } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { ComponentProps, useState } from "react"
+import { Loader2 } from "lucide-react"
+import { ComponentProps } from "react"
+import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+import { z } from "zod"
 import { Button } from "./ui/button"
 import { Label } from "./ui/label"
 import { Textarea } from "./ui/textarea"
 
+const orderDisapprovalSchema = z.object({
+    observation: z.string().optional(),
+})
+
+type OrderDisapprovalData = z.infer<typeof orderDisapprovalSchema>
+
 type DisapproveOrderFormProps = ComponentProps<"form"> & { approve: boolean, orderId: number }
 
 export function DisapproveOrderForm({ className, approve, orderId }: DisapproveOrderFormProps) {
-    const [observation, setObservation] = useState("")
+    const queryClient = useQueryClient()
+    const navigate = useNavigate()
 
-    async function handleSendApprove(e: React.FormEvent) {
-        e.preventDefault()
+    const { register, handleSubmit, formState: { isSubmitting } } = useForm<OrderDisapprovalData>({
+        resolver: zodResolver(orderDisapprovalSchema),
+    })
+
+    const { mutateAsync } = useMutation({
+        mutationFn: async (data: OrderDisapprovalData) => handleSendDisapprove(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["justification-pendents"] })
+        }
+    })
+
+    async function handleSendDisapprove({ observation }: OrderDisapprovalData) {
         try {
             const user = Cookies.get("j.ai.user")
             const data = {
@@ -26,28 +49,33 @@ export function DisapproveOrderForm({ className, approve, orderId }: DisapproveO
             const response = await api.post("/justification/manager/action", data)
             console.log(response)
             toast.info("Reprovação enviada para o solicitante")
+
+            navigate("/manager")
         }
         catch (error) {
             console.error(error)
             toast.error("Não foi possível enviar reprovação, tente novamente")
         }
     }
+    async function submitDisapprove({ observation }: OrderDisapprovalData) {
+        await mutateAsync({ observation })
+    }
     return (
-        <form onSubmit={handleSendApprove} className={cn("grid items-start gap-4", className)}>
+        <form onSubmit={handleSubmit(submitDisapprove)} className={cn("grid items-start gap-4", className)}>
             <div className="grid gap-2">
-                <Label htmlFor="complement">Comentário</Label>
+                <Label htmlFor="observation">Comentário</Label>
                 <Textarea
-                    id="complement"
-                    name="complement"
+                    id="observation"
                     placeholder=""
-                    value={observation}
-                    onChange={(e) => setObservation(e.target.value)}
+                    {...register("observation")}
                     className="w-full"
                     required
                     rows={5}
                 />
             </div>
-            <Button type="submit" className="bg-red-500 hover:bg-red-600">Confirmar reprovação</Button>
+            <Button disabled={isSubmitting} type="submit" className="bg-red-500 hover:bg-red-600">
+                {isSubmitting ? <Loader2 className="size-3 animate-spin" /> : "Confirmar reprovação"}
+            </Button>
         </form>
     )
 }

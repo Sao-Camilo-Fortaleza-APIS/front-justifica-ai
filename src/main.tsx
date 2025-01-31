@@ -5,15 +5,25 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 
 import { Toaster } from 'sonner'
+import { AuthContextProvider } from './contexts/auth-provider'
 import './global.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 600000, // 10 minutos - tempo de vida do cache (garbage collector)
+    }
+  }
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Toaster position='top-center' richColors />
-      <RouterProvider router={router} />
+      <AuthContextProvider>
+        <RouterProvider router={router} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      </AuthContextProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )
