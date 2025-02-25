@@ -30,7 +30,7 @@ export function Approve() {
     const [collaboratorFilter, setCollaboratorFilter] = useState<string>("")
     const [selectedSector, setSelectedSector] = useState<Sector | null>(null)
 
-    const { data: ordersResponse, isLoading, isFetching } = useQuery<Justificativa[]>({
+    const { data: ordersResponse, isFetching } = useQuery<Justificativa[]>({
         queryKey: ["justification-pendents"],
         queryFn: async () => {
             if (!user) {
