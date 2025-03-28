@@ -42,6 +42,17 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
     onTimeChange(selectedTime)
   }
 
+  function getNextWorkday(date: Date): Date {
+    const nextDay = new Date(date);
+
+    // Pula sábado e domingo, avançando para segunda-feira
+    while (nextDay.getDay() === 0 || nextDay.getDay() === 6 || nextDay.getDay() === 5) {
+      nextDay.setDate(nextDay.getDate() + 1);
+    }
+
+    return nextDay;
+  }
+
   useEffect(() => {
     if (reset) {
       setDate(undefined);
@@ -102,24 +113,28 @@ export function DateTimePicker({ onDateChange, onTimeChange, className, isSchedu
           const today = new Date();
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
+
           // Data de corte: dia 25 do mês anterior ou do mês atual, dependendo da data atual
-          /*  const minDate = today.getDate() < 26
-             ? new Date(currentYear, currentMonth - 1, 26)
-             : new Date(currentYear, currentMonth, 26) */
-          const minDate = new Date("2024-12-26")
+          const minDate = today.getDate() < 26
+            ? new Date(currentYear, currentMonth - 1, 26)
+            : new Date(currentYear, currentMonth, 26);
 
           const maxDate = today < new Date(currentYear, currentMonth, 26)
             ? new Date(currentYear, currentMonth, 25)
-            : new Date(currentYear, currentMonth + 1, 25)
+            : new Date(currentYear, currentMonth + 1, 25);
+
+          // Se o dia 25 cair em sexta ou fim de semana, ajusta para o próximo dia útil
+          const adjustedMaxDate = getNextWorkday(maxDate)
 
           if (isScheduleBreak) {
-            return date < minDate || date > new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 25)
+            return date < minDate || date > new Date(adjustedMaxDate.getFullYear(), adjustedMaxDate.getMonth() + 1, 25);
           }
+
           /**
            * date < minDate: desabilita datas antes do dia 25 do mês
-           * date > today: desabilita datas futuras
+           * date > adjustedMaxDate: desabilita datas após o dia útil
            */
-          return date < minDate || date > maxDate
+          return date < minDate || date > adjustedMaxDate;
         }}
       />
     </>
